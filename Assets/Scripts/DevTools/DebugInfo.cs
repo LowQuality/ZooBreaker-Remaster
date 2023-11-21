@@ -19,34 +19,33 @@ namespace DevTools
             GUI.depth = 2;
             while (true)
             {
+                // 안드로이드 디버그 대응
                 if (Input.GetKeyDown(KeyCode.F1))
                 {
-                    if (Input.GetKey(KeyCode.LeftShift))
+                    _showDebugInfo = !_showDebugInfo;
+                    Debug.Log($"Show Debug Info: {_showDebugInfo}");
+                }
+                
+                if (Input.GetKey(KeyCode.F5))
+                {
+                    _showVariables = !_showVariables;
+                    Debug.Log($"Show Variables: {_showVariables}");
+                }
+                
+                if (Input.GetKey(KeyCode.F6))
+                {
+                    // 1/4, 1/2, 1, 2, 4 배율
+                    _guiScale = _guiScale switch
                     {
-                        _showDebugInfo = true;
-                        _showVariables = !_showVariables;
-                        Debug.Log($"Show Variables: {_showVariables}");
-                    }
-                    else if (Input.GetKey(KeyCode.LeftAlt))
-                    {
-                        // 1/4, 1/2, 1, 2, 4 배율
-                        _guiScale = _guiScale switch
-                        {
-                            0.25f => 0.5f,
-                            0.5f => 1f,
-                            1f => 2f,
-                            2f => 4f,
-                            4f => 0.25f,
-                            _ => 1f
-                        };
-                        Debug.Log($"GUI Scale: {_guiScale}");
-                    }
-                    else
-                    {
-                        _showDebugInfo = !_showDebugInfo;
-                        Debug.Log($"Show Debug Info: {_showDebugInfo}");
-                    }
-                } 
+                        0.25f => 0.5f,
+                        0.5f => 1f,
+                        1f => 2f,
+                        2f => 4f,
+                        4f => 0.25f,
+                        _ => 1f
+                    };
+                    Debug.Log($"GUI Scale: {_guiScale}");
+                }
                 yield return null;
             }
             // ReSharper disable once IteratorNeverReturns
