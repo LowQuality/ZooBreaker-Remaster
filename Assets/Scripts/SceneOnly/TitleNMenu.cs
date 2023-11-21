@@ -1,6 +1,7 @@
 using System.Collections;
 using Management;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SceneOnly
 {
@@ -9,7 +10,8 @@ namespace SceneOnly
         /* Unity API */
         private void Start()
         {
-            BGMManager.Instance.FadeInNPlay(0);
+            StartCoroutine(ResetData());
+            BGMManager.Instance.FadeInNPlay(0, 0, 50);
             Application.targetFrameRate = 300;
         }
         
@@ -70,14 +72,17 @@ namespace SceneOnly
             FadeManager.Instance.FadeIn(0.1f);
         }
 
-        private IEnumerator Menu2StoryMode()
+        private static IEnumerator Menu2StoryMode()
         {
             SeManager.Instance.Play2Shot(7, 40);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
+            BGMManager.Instance.FadeOut(0.5f);
+            yield return new WaitForSeconds(0.5f);
+            SceneManager.LoadScene("StoryMenu");
         }
         
-        private IEnumerator Menu2EndlessMode()
+        private static IEnumerator Menu2EndlessMode()
         {
             SeManager.Instance.Play2Shot(7, 40);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
@@ -111,12 +116,26 @@ namespace SceneOnly
             FadeManager.Instance.FadeIn(0.1f);
         }
         
-        private IEnumerator Exit()
+        private static IEnumerator Exit()
         {
             SeManager.Instance.Play2Shot(7, 40);
             FadeManager.Instance.BlackFXFadeOut(0.25f);
             yield return new WaitForSeconds(0.5f);
             Application.Quit();
+        }
+
+        private static IEnumerator ResetData()
+        {
+            var resetData = 0;
+            while (true)
+            {
+                yield return null;
+                if (!Input.GetKeyDown(KeyCode.F2)) continue;
+                resetData++;
+                if (resetData != 10) continue;
+                ValueManager.Instance.ResetData();
+                resetData = 0;
+            }
         }
     }
 }

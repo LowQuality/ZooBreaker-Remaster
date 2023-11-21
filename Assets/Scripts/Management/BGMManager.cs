@@ -34,15 +34,9 @@ namespace Management
         /// <param name="index">재생할 효과음의 인덱스입니다.</param>
         /// <param name="duration">지속시간을 설정합니다.</param>
         /// <param name="maxVolume">페이드 인 후 최대 볼륨을 설정합니다. 비워놓을 경우 100으로 자동 설정됩니다.</param>
-        public void FadeInNPlay(int index, float duration = 0, int maxVolume = -1)
+        public void FadeInNPlay(int index, float duration = 0, int maxVolume = 100)
         {
-            if (maxVolume == -1)
-            {
-                maxVolume = 100;
-            }
-            
             bgmPlayer.clip = bgmSources[index];
-            bgmPlayer.volume = 0;
             bgmPlayer.loop = true;
             bgmPlayer.Play();
             StartCoroutine(FadeInCoroutine(maxVolume, duration));
@@ -66,16 +60,16 @@ namespace Management
             bgmPlayer.volume = 0;
             if (Mathf.Approximately(duration, 0f))
             {
-                bgmPlayer.volume = maxVolume;
+                bgmPlayer.volume = (float)maxVolume / 100;
             }
             else
             {
-                while (bgmPlayer.volume < maxVolume)
+                while (bgmPlayer.volume < (float)maxVolume / 100)
                 {
-                    bgmPlayer.volume += + Time.deltaTime / duration;
+                    bgmPlayer.volume += Time.deltaTime / duration;
                     yield return null;
                 }
-                bgmPlayer.volume = maxVolume;
+                bgmPlayer.volume = (float)maxVolume / 100;
             }
         }
         private IEnumerator FadeOutCoroutine(float duration)
@@ -87,9 +81,9 @@ namespace Management
             }
             else
             {
-                while (bgmPlayer.volume > 0)
+                while (bgmPlayer.volume > 0.0f)
                 {
-                    bgmPlayer.volume -= - Time.deltaTime / duration;
+                    bgmPlayer.volume -= Time.deltaTime / duration;
                     yield return null;
                 }
                 bgmPlayer.Stop();
