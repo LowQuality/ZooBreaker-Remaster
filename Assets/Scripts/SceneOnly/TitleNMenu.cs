@@ -9,7 +9,8 @@ namespace SceneOnly
         /* Unity API */
         private void Start()
         {
-            BGMManager.Instance.FadeInNPlay(0, 0f);
+            BGMManager.Instance.FadeInNPlay(0);
+            Application.targetFrameRate = 300;
         }
         
         /* Variables */
