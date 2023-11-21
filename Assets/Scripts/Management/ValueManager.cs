@@ -170,5 +170,17 @@ namespace Management
                 Debug.Log($"세이브 파일을 삭제할 수 없습니다. {e}");
             }
         }
+        public string DebugInfo()
+        {
+            if (!Debug.isDebugBuild) return null;
+            // 클래스의 필드들 모두 가져오기
+            var fields = typeof(ValueManager).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            
+            // 메모리에 저장된 데이터들을 문자열로 변환
+            var saveData = fields.Aggregate("", (current, field) => current + $"{field.Name}: {field.GetValue(this)}\n");
+            saveData = saveData.Remove(saveData.Length - 1);
+            
+            return saveData;
+        }
     }
 }
