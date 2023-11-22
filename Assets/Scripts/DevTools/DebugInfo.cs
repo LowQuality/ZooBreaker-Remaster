@@ -19,20 +19,20 @@ namespace DevTools
             GUI.depth = 2;
             while (true)
             {
-                // 안드로이드 디버그 대응
+                // TODO: 예약 (F7 : 이전 페이지 / F8 : 다음 페이지)
                 if (Input.GetKeyDown(KeyCode.F1))
                 {
                     _showDebugInfo = !_showDebugInfo;
                     Debug.Log($"Show Debug Info: {_showDebugInfo}");
                 }
                 
-                if (Input.GetKey(KeyCode.F5))
+                if (Input.GetKeyDown(KeyCode.F5))
                 {
                     _showVariables = !_showVariables;
                     Debug.Log($"Show Variables: {_showVariables}");
                 }
                 
-                if (Input.GetKey(KeyCode.F6))
+                if (Input.GetKeyDown(KeyCode.F6))
                 {
                     // 1/4, 1/2, 1, 2, 4 배율
                     _guiScale = _guiScale switch
@@ -41,7 +41,9 @@ namespace DevTools
                         0.5f => 1f,
                         1f => 2f,
                         2f => 4f,
-                        4f => 0.25f,
+                        4f => 6f,
+                        6f => 8f,
+                        8f => 0.25f,
                         _ => 1f
                     };
                     Debug.Log($"GUI Scale: {_guiScale}");
@@ -59,6 +61,7 @@ namespace DevTools
                 _deltaTime += (Time.unscaledDeltaTime - _deltaTime) * 0.1f;
                 yield return new WaitForSeconds(FPSUpdateRate);
             }
+            // ReSharper disable once IteratorNeverReturns
         }
     
         private void OnGUI()
@@ -69,13 +72,19 @@ namespace DevTools
                        $"FPS: {Mathf.Round(_count)} ({_deltaTime * 1000.0f:0.0} ms) | {FPSUpdateRate}s\n" +
                        $"\n-- Variables(Show: {_showVariables}) --\n" +
                        $"{values}";
-            var count = text.Split('\n').Length - 1;
-
-            var location = new Rect(5, 5, 250 * _guiScale, count * 25 * _guiScale);
+            
+            var content = new GUIContent(text);
+            GUI.skin.label.fontSize = (int)(15 * _guiScale);
+            // 화면 크기에 맞춰서 디버그 정보 크기 조절
+            var size = GUI.skin.label.CalcSize(content);
+            size.x = Mathf.Min(size.x, Screen.width - 75);
+            size.y = GUI.skin.label.CalcHeight(content, size.x);
+            
+            var location = new Rect(5, 5, size.x, size.y);
             Texture black = Texture2D.linearGrayTexture;
             GUI.DrawTexture(location, black, ScaleMode.StretchToFill);
             GUI.color = Color.black;
-            GUI.skin.label.fontSize = (int)(18 * _guiScale);
+            
             GUI.Label(location, text);
         }
     }

@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 using Utils;
 
@@ -18,7 +20,8 @@ namespace Management
         private bool _isStoryWatched;
         private int _clearedStage;
         private int _lastLevelLocated;
-        
+        private List<int> _endlessModeHighScore = new();
+
         /* Public Variables */
         [Description("게임이 일시정지되었는지 여부를 나타냅니다.")] 
         public bool IsGamePaused
@@ -63,6 +66,30 @@ namespace Management
                 Save();
             }
         }
+        
+        [Description("엔드리스 모드의 점수를 추가하거나 최고 6개의 점수를 가져옵니다.")]
+        public List<int> EndlessModeHighScore(int score = -1)
+        {
+            if (score != -1)
+            {
+                if (_endlessModeHighScore == null) _endlessModeHighScore = new List<int>();
+                _endlessModeHighScore.Add(score);
+                // 최고 점수가 6개 이상이면 6개만 저장후 정렬
+                if (_endlessModeHighScore.Count >= 6)
+                {
+                    _endlessModeHighScore.Sort();
+                    _endlessModeHighScore.Reverse();
+                    _endlessModeHighScore.RemoveRange(6, _endlessModeHighScore.Count - 6);
+                }
+
+                Save();
+            }
+            else
+            {
+                return _endlessModeHighScore;
+            }
+            return null;
+        }
 
 
         /* !! Dont Touch !! */
@@ -82,24 +109,51 @@ namespace Management
             // 클래스의 필드들 모두 가져오기
             var fields = typeof(ValueManager).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 
+            /* 전처리 */
             try
             {
-                // 메모리에 저장된 데이터들을 문자열로 변환
-                var saveData = fields.Aggregate("", (current, field) => current + $"{field.Name}:{field.FieldType}:{field.GetValue(this)},");
+                var saveData = "";
+                foreach (var field in fields)
+                {
+                    // List 타입은 따로 처리
+                    if (field.FieldType == typeof(List<int>))
+                    {
+                        // List<int> 가 비어있으면 다른값 출력
+                        if (((List<int>) field.GetValue(this)).Count == 0)
+                        {
+                            saveData += $"{field.Name}:{field.FieldType}:{{0, 0, 0, 0, 0, 0}}\n";
+                        }
+                        else
+                        {
+                            var list = (List<int>) field.GetValue(this);
+                            var listString = list.Aggregate("", (current, i) => current + $"{i},");
+                            listString = listString.Remove(listString.Length - 1);
+                            saveData += $"{field.Name}:{field.FieldType}:{{{listString}}}\n";
+                        }
+                    }
+                    else
+                    {
+                        saveData += $"{field.Name}:{field.FieldType}:{field.GetValue(this)}\n";
+                    }
+                }
+                /* 전처리 */
+                
+                /* 후처리 */
                 saveData = saveData.Remove(saveData.Length - 1);
-            
+                    
                 // 세이브할 폴더가 없으면 새로운 폴더 생성
                 if (!Directory.Exists(Application.persistentDataPath + "/SaveFiles"))
                     Directory.CreateDirectory(Application.persistentDataPath + "/SaveFiles");
-            
+                    
                 // 암호화
                 saveData = Crypto.EncryptionAes("Ddh912!#jCh9H3)5dK8@h^fb&d6hN2M&", saveData);
-                saveData = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(saveData));
+                saveData = Convert.ToBase64String(Encoding.UTF8.GetBytes(saveData));
             
                 // 파일에 저장
                 File.WriteAllText(Application.persistentDataPath + "/SaveFiles/Save.dat", saveData);
             
-                Debug.Log($"세이브 파일 저장 완료 | 세이브 데이터 : {saveData}");
+                Debug.Log($"세이브 파일 저장 완료 | 저장된 데이터 보기 \n---\n{saveData}\n---");
+                /* 후처리 */
             } catch (Exception e)
             {
                 Debug.Log($"세이브 파일을 저장할 수 없습니다. {e}");
@@ -117,11 +171,11 @@ namespace Management
                 var saveData = File.ReadAllText(Application.persistentDataPath + "/SaveFiles/Save.dat");
             
                 // 복호화
-                saveData = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(saveData));
+                saveData = Encoding.UTF8.GetString(Convert.FromBase64String(saveData));
                 saveData = Crypto.DecryptionAes("Ddh912!#jCh9H3)5dK8@h^fb&d6hN2M&", saveData);
             
                 // 필드들 모두 가져오기
-                var saveDateSplit = saveData.Split(',');
+                var saveDateSplit = saveData.Split('\n');
             
                 // 필드들에 저장된 데이터들을 메모리에 로드
                 foreach (var field in saveDateSplit)
@@ -132,18 +186,22 @@ namespace Management
                     var fieldValue = fieldSplit[2];
                 
                     var fieldInfo = typeof(ValueManager).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-                    switch (fieldType)
+                    
+                    // List 타입은 따로 처리
+                    if (fieldType == "System.Collections.Generic.List`1[System.Int32]")
                     {
-                        case "System.Boolean":
-                            if (fieldInfo != null) fieldInfo.SetValue(this, bool.Parse(fieldValue));
-                            break;
-                        case "System.Int32":
-                            if (fieldInfo != null) fieldInfo.SetValue(this, int.Parse(fieldValue));
-                            break;
+                        var listSplit = fieldValue.Replace("{", "").Replace("}", "").Split(',');
+                        var list = listSplit.Select(int.Parse).ToList();
+                        if (fieldInfo != null) fieldInfo.SetValue(this, list);
+                    }
+                    else
+                    {
+                        if (fieldInfo != null)
+                            fieldInfo.SetValue(this, Convert.ChangeType(fieldValue, Type.GetType(fieldType)!));
                     }
                 }
             
-                Debug.Log($"세이브 파일 불러오기 완료! | 세이브 데이터 : {saveData}");
+                Debug.Log($"세이브 파일 불러오기 완료! | 불러온 데이터 보기 \n---\n{saveData}\n---");
             } catch (Exception e)
             {
                 Debug.Log($"세이브 파일을 볼러올 수 없습니다. {e}");
@@ -177,10 +235,34 @@ namespace Management
             var fields = typeof(ValueManager).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
             
             // 메모리에 저장된 데이터들을 문자열로 변환
-            var saveData = fields.Aggregate("", (current, field) => current + $"{field.Name}: {field.GetValue(this)}\n");
+            var saveData = "";
+            foreach (var field in fields)
+            {
+                // List 타입은 따로 처리
+                if (field.FieldType == typeof(List<int>))
+                {
+                    // List<int> 가 비어있으면 다른값 출력
+                    if ((List<int>) field.GetValue(this) == null || ((List<int>) field.GetValue(this)).Count == 0)
+                    {
+                        saveData += $"{field.Name}: {{0, 0, 0, 0, 0, 0}}\n";
+                    }
+                    else
+                    {
+                        var list = (List<int>) field.GetValue(this);
+                        var listString = list.Aggregate("", (current, i) => current + $"{i},");
+                        listString = listString.Remove(listString.Length - 1);
+                        saveData += $"{field.Name}: {{{listString}}}\n";
+                    }
+                }
+                else
+                {
+                    saveData += $"{field.Name}: {field.GetValue(this)}\n";
+                }
+            }
             saveData = saveData.Remove(saveData.Length - 1);
             
             return saveData;
         }
+        /* !! Dont Touch !! */
     }
 }

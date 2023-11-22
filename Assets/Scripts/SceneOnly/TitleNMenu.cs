@@ -87,6 +87,9 @@ namespace SceneOnly
             SeManager.Instance.Play2Shot(7, 40);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
+            BGMManager.Instance.FadeOut(0.5f);
+            yield return new WaitForSeconds(0.5f);
+            SceneManager.LoadScene("EndlessMode");
         }
         
         private IEnumerator Menu2Records()
@@ -136,6 +139,7 @@ namespace SceneOnly
                 ValueManager.Instance.ResetData();
                 resetData = 0;
             }
+            // ReSharper disable once IteratorNeverReturns
         }
     }
 }
