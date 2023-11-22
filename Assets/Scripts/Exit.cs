@@ -8,7 +8,7 @@ public class Exit : MonoBehaviour
     private void Update()
     {
         if (!Input.GetKeyDown(KeyCode.Escape) || exit.activeSelf) return;
-        SeManager.Instance.Play2Shot(7, 40);
+        SeManager.Instance.Play2Shot(7);
         BGMManager.Instance.Pause();
         exit.SetActive(true);
     }

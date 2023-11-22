@@ -16,7 +16,9 @@ namespace Management
         public static ValueManager Instance;
 
         /* Private Variables */
-        private bool _isGamePaused;
+        private bool _isGamePausedN;
+        private bool _isPlayingN;
+        
         private bool _isStoryWatched;
         private int _clearedStage;
         private int _lastLevelLocated;
@@ -26,12 +28,8 @@ namespace Management
         [Description("게임이 일시정지되었는지 여부를 나타냅니다.")] 
         public bool IsGamePaused
         {
-            get => _isGamePaused;
-            set
-            {
-                _isGamePaused = value;
-                Save();
-            }
+            get => _isGamePausedN;
+            set => _isGamePausedN = value;
         }
 
         [Description("게임 스토리를 봤는지 여부를 나타냅니다.")]
@@ -43,6 +41,13 @@ namespace Management
                 _isStoryWatched = value;
                 Save();
             }
+        }
+        
+        [Description("게임이 진행중인지 여부를 나타냅니다.")]
+        public bool IsPlaying
+        {
+            get => _isPlayingN;
+            set => _isPlayingN = value;
         }
 
         [Description("게임에서 클리어한 스테이지의 수를 나타냅니다.")]
@@ -108,6 +113,8 @@ namespace Management
         {
             // 클래스의 필드들 모두 가져오기
             var fields = typeof(ValueManager).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            // 변수명 끝에 N이 붙은 변수는 저장하지 않음
+            fields = fields.Where(field => !field.Name.EndsWith("N")).ToArray();
 
             /* 전처리 */
             try
@@ -119,7 +126,7 @@ namespace Management
                     if (field.FieldType == typeof(List<int>))
                     {
                         // List<int> 가 비어있으면 다른값 출력
-                        if (((List<int>) field.GetValue(this)).Count == 0)
+                        if ((List<int>) field.GetValue(this) == null || ((List<int>) field.GetValue(this)).Count == 0)
                         {
                             saveData += $"{field.Name}:{field.FieldType}:{{0, 0, 0, 0, 0, 0}}\n";
                         }
@@ -152,7 +159,7 @@ namespace Management
                 // 파일에 저장
                 File.WriteAllText(Application.persistentDataPath + "/SaveFiles/Save.dat", saveData);
             
-                Debug.Log($"세이브 파일 저장 완료 | 저장된 데이터 보기 \n---\n{saveData}\n---");
+                // Debug.Log($"세이브 파일 저장 완료 | 저장된 데이터 보기 \n---\n{saveData}\n---");
                 /* 후처리 */
             } catch (Exception e)
             {
@@ -222,7 +229,7 @@ namespace Management
                 {
                     field.SetValue(this, default);
                 }
-                Debug.Log("메모리 초기화 완료!");
+                // Debug.Log("메모리 초기화 완료!");
             } catch (Exception e)
             {
                 Debug.Log($"세이브 파일을 삭제할 수 없습니다. {e}");

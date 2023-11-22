@@ -8,6 +8,8 @@ namespace Management
     {
         [SerializeField] private List<AudioClip> bgmSources;
         [SerializeField] private AudioSource bgmPlayer;
+
+        private bool _isFading;
         
         public static BGMManager Instance { get; private set; }
         
@@ -17,6 +19,10 @@ namespace Management
             {
                 Instance = this;
             }
+        }
+        private void Start()
+        {
+            StartCoroutine(VolumeManager());
         }
 
         /// <summary>
@@ -33,13 +39,12 @@ namespace Management
         /// </summary>
         /// <param name="index">재생할 효과음의 인덱스입니다.</param>
         /// <param name="duration">지속시간을 설정합니다.</param>
-        /// <param name="maxVolume">페이드 인 후 최대 볼륨을 설정합니다. 비워놓을 경우 100으로 자동 설정됩니다.</param>
-        public void FadeInNPlay(int index, float duration = 0, int maxVolume = 100)
+        public void FadeInNPlay(int index, float duration = 0)
         {
             bgmPlayer.clip = bgmSources[index];
             bgmPlayer.loop = true;
             bgmPlayer.Play();
-            StartCoroutine(FadeInCoroutine(maxVolume, duration));
+            StartCoroutine(FadeInCoroutine(Settings.Instance.BgmVolume, duration));
         }
         public void FadeOut(float duration = 0)
         {
@@ -64,12 +69,13 @@ namespace Management
             }
             else
             {
+                _isFading = true;
                 while (bgmPlayer.volume < (float)maxVolume / 100)
                 {
                     bgmPlayer.volume += Time.deltaTime / duration;
                     yield return null;
                 }
-                bgmPlayer.volume = (float)maxVolume / 100;
+                _isFading = false;
             }
         }
         private IEnumerator FadeOutCoroutine(float duration)
@@ -81,13 +87,31 @@ namespace Management
             }
             else
             {
+                _isFading = true;
                 while (bgmPlayer.volume > 0.0f)
                 {
                     bgmPlayer.volume -= Time.deltaTime / duration;
                     yield return null;
                 }
                 bgmPlayer.Stop();
+                _isFading = false;
             }
+        }
+        private IEnumerator VolumeManager()
+        {
+            while (true)
+            {
+                if (!_isFading)
+                {
+                    bgmPlayer.volume = Settings.Instance.BgmVolume / 100f;
+                    yield return null;
+                }
+                else
+                {
+                    yield return null;
+                }
+            }
+            // ReSharper disable once IteratorNeverReturns
         }
     }
 }

@@ -67,7 +67,7 @@ namespace DevTools
         private void OnGUI()
         {
             if (!_showDebugInfo) return;
-            var values = _showVariables ? ValueManager.Instance.DebugInfo() : null;
+            var values = _showVariables ? $"{Settings.Instance.DebugInfo()}\n{ValueManager.Instance.DebugInfo()}" : "";
             var text = $"Version: {Application.version}\n" +
                        $"FPS: {Mathf.Round(_count)} ({_deltaTime * 1000.0f:0.0} ms) | {FPSUpdateRate}s\n" +
                        $"\n-- Variables(Show: {_showVariables}) --\n" +

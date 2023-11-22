@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,10 @@ namespace Management
             {
                 Instance = this;
             }
+        }
+        private void Start()
+        {
+            StartCoroutine(VolumeManager());
         }
 
         /// <summary>
@@ -36,10 +41,20 @@ namespace Management
         /// 11 = 게임 시작<br />
         /// </summary>
         /// <param name="index">재생할 효과음의 인덱스입니다.</param>
-        /// <param name="volume">볼륨을 설정합니다. 비워놓을 경우 100으로 자동 설정됩니다.</param>
-        public void Play2Shot(int index, int volume = 100)
+        public void Play2Shot(int index)
         {
-            sePlayer.PlayOneShot(seSources[index], volume / 100f);
+            sePlayer.PlayOneShot(seSources[index], Settings.Instance.SeVolume / 100f);
+        }
+        
+        /* Coroutines */
+        private IEnumerator VolumeManager()
+        {
+            while (true)
+            {
+                sePlayer.volume = Settings.Instance.SeVolume / 100f;
+                yield return null;
+            }
+            // ReSharper disable once IteratorNeverReturns
         }
     }
 }

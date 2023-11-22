@@ -18,7 +18,7 @@ namespace SceneOnly
         {
             if (!ValueManager.Instance.IsStoryWatched && ValueManager.Instance.LastLevelLocated == 0)
             {
-                BGMManager.Instance.FadeInNPlay(1, 0.5f, 50);
+                BGMManager.Instance.FadeInNPlay(1, 0.5f);
                 yield return new WaitForSeconds(0.1f);
                 FadeManager.Instance.FadeIn(0.1f);
                 

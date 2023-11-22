@@ -2,6 +2,7 @@ using System.Collections;
 using Management;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace SceneOnly
 {
@@ -11,7 +12,8 @@ namespace SceneOnly
         private void Start()
         {
             StartCoroutine(ResetData());
-            BGMManager.Instance.FadeInNPlay(0, 0, 50);
+            StartCoroutine(SoundSettings());
+            BGMManager.Instance.FadeInNPlay(0);
             Application.targetFrameRate = 300;
         }
         
@@ -21,6 +23,9 @@ namespace SceneOnly
         [SerializeField] private GameObject records;
         [SerializeField] private GameObject settings;
         [SerializeField] private GameObject help;
+        
+        [SerializeField] private Slider bgmSlider;
+        [SerializeField] private Slider seSlider;
         
         /* Functions */
         private void SceneSetActivates(bool bTitle, bool bMenu, bool bRecords, bool bSettings, bool bHelp)
@@ -65,16 +70,16 @@ namespace SceneOnly
         /* Coroutines */
         private IEnumerator Title2Menu()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
             SceneSetActivates(false, true, false, false, false);
             FadeManager.Instance.FadeIn(0.1f);
         }
 
-        private static IEnumerator Menu2StoryMode()
+        private IEnumerator Menu2StoryMode()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
             BGMManager.Instance.FadeOut(0.5f);
@@ -82,9 +87,9 @@ namespace SceneOnly
             SceneManager.LoadScene("StoryMenu");
         }
         
-        private static IEnumerator Menu2EndlessMode()
+        private IEnumerator Menu2EndlessMode()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
             BGMManager.Instance.FadeOut(0.5f);
@@ -94,7 +99,7 @@ namespace SceneOnly
         
         private IEnumerator Menu2Records()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
             SceneSetActivates(false, false, true, false, false);
@@ -103,7 +108,7 @@ namespace SceneOnly
         
         private IEnumerator Menu2Settings()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
             SceneSetActivates(false, false, false, true, false);
@@ -112,7 +117,7 @@ namespace SceneOnly
         
         private IEnumerator Menu2Help()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
             SceneSetActivates(false, false, false, false, true);
@@ -121,7 +126,7 @@ namespace SceneOnly
         
         private static IEnumerator Exit()
         {
-            SeManager.Instance.Play2Shot(7, 40);
+            SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.25f);
             yield return new WaitForSeconds(0.5f);
             Application.Quit();
@@ -138,6 +143,20 @@ namespace SceneOnly
                 if (resetData != 10) continue;
                 ValueManager.Instance.ResetData();
                 resetData = 0;
+            }
+            // ReSharper disable once IteratorNeverReturns
+        }
+        
+        private IEnumerator SoundSettings()
+        {
+            bgmSlider.value = Settings.Instance.BgmVolume;
+            seSlider.value = Settings.Instance.SeVolume;
+            while (true)
+            {
+                // TODO: 슬라이더를 놓았을때 설정값 업데이트
+                yield return null;
+                Settings.Instance.BgmVolume = (int)bgmSlider.value;
+                Settings.Instance.SeVolume = (int)seSlider.value;
             }
             // ReSharper disable once IteratorNeverReturns
         }
