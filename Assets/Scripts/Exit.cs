@@ -1,5 +1,5 @@
 using System.Collections;
-using Management;
+using Managements;
 using UnityEngine;
 
 public class Exit : MonoBehaviour

@@ -1,5 +1,5 @@
 using System.Collections;
-using Management;
+using Managements;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -153,7 +153,6 @@ namespace SceneOnly
             seSlider.value = Settings.Instance.SeVolume;
             while (true)
             {
-                // TODO: 슬라이더를 놓았을때 설정값 업데이트
                 yield return null;
                 Settings.Instance.BgmVolume = (int)bgmSlider.value;
                 Settings.Instance.SeVolume = (int)seSlider.value;

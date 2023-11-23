@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using Management;
+using Managements;
 
 namespace DevTools
 {
@@ -25,12 +25,14 @@ namespace DevTools
                     _showDebugInfo = !_showDebugInfo;
                     Debug.Log($"Show Debug Info: {_showDebugInfo}");
                 }
-                
+
+#if (DEV)
                 if (Input.GetKeyDown(KeyCode.F5))
                 {
                     _showVariables = !_showVariables;
                     Debug.Log($"Show Variables: {_showVariables}");
                 }
+#endif
                 
                 if (Input.GetKeyDown(KeyCode.F6))
                 {
@@ -67,10 +69,16 @@ namespace DevTools
         private void OnGUI()
         {
             if (!_showDebugInfo) return;
-            var values = _showVariables ? $"{Settings.Instance.DebugInfo()}\n{ValueManager.Instance.DebugInfo()}" : "";
+            
+            var values = $"\n-- Variables(Show: {_showVariables}) --";
+#if (DEV)
+            values += _showVariables ? "\n" +
+                                       $"{Settings.Instance.DebugInfo()}\n" +
+                                       $"{ValueManager.Instance.DebugInfo()}" : "";
+#endif
+            
             var text = $"Version: {Application.version}\n" +
-                       $"FPS: {Mathf.Round(_count)} ({_deltaTime * 1000.0f:0.0} ms) | {FPSUpdateRate}s\n" +
-                       $"\n-- Variables(Show: {_showVariables}) --\n" +
+                       $"FPS: {Mathf.Round(_count)}/{Application.targetFrameRate} ({_deltaTime * 1000.0f:0.0} ms) | {FPSUpdateRate}s\n" +
                        $"{values}";
             
             var content = new GUIContent(text);

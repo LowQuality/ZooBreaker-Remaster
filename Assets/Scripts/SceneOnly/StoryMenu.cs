@@ -1,5 +1,5 @@
 using System.Collections;
-using Management;
+using Managements;
 using UnityEngine;
 
 namespace SceneOnly

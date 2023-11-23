@@ -1,15 +1,15 @@
+
 using UnityEngine;
 
 namespace DevTools
 {
     public class DevelopmentBuildOnly : MonoBehaviour
     {
+#if (!DEV)
         public void Awake()
         {
-            if (!Debug.isDebugBuild)
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
+#endif
     }
 }

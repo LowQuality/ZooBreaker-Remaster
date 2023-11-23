@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using Utils;
 
-namespace Management
+namespace Managements
 {
     public class ValueManager : MonoBehaviour
     {
@@ -109,6 +109,7 @@ namespace Management
         }
 
         /* Functions */
+        // TODO : 좀더 효율적인 방법 찾기 (All)
         private void Save()
         {
             // 클래스의 필드들 모두 가져오기
@@ -148,16 +149,12 @@ namespace Management
                 /* 후처리 */
                 saveData = saveData.Remove(saveData.Length - 1);
                     
-                // 세이브할 폴더가 없으면 새로운 폴더 생성
-                if (!Directory.Exists(Application.persistentDataPath + "/SaveFiles"))
-                    Directory.CreateDirectory(Application.persistentDataPath + "/SaveFiles");
-                    
                 // 암호화
                 saveData = Crypto.EncryptionAes("Ddh912!#jCh9H3)5dK8@h^fb&d6hN2M&", saveData);
                 saveData = Convert.ToBase64String(Encoding.UTF8.GetBytes(saveData));
             
                 // 파일에 저장
-                File.WriteAllText(Application.persistentDataPath + "/SaveFiles/Save.dat", saveData);
+                File.WriteAllText(Application.persistentDataPath + "/SaveFiles/save.dat", saveData);
             
                 // Debug.Log($"세이브 파일 저장 완료 | 저장된 데이터 보기 \n---\n{saveData}\n---");
                 /* 후처리 */
@@ -168,14 +165,10 @@ namespace Management
         }
         private void Load()
         {
-            // 세이브할 폴더가 없으면 새로운 폴더 생성
-            if (!Directory.Exists(Application.persistentDataPath + "/SaveFiles"))
-                Directory.CreateDirectory(Application.persistentDataPath + "/SaveFiles");
-
             try
             {
                 // 파일에서 불러오기
-                var saveData = File.ReadAllText(Application.persistentDataPath + "/SaveFiles/Save.dat");
+                var saveData = File.ReadAllText(Application.persistentDataPath + "/PersonalizationFile/save.dat");
             
                 // 복호화
                 saveData = Encoding.UTF8.GetString(Convert.FromBase64String(saveData));
@@ -195,16 +188,15 @@ namespace Management
                     var fieldInfo = typeof(ValueManager).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
                     
                     // List 타입은 따로 처리
-                    if (fieldType == "System.Collections.Generic.List`1[System.Int32]")
+                    if (fieldType.Contains("System.Collections.Generic.List"))
                     {
                         var listSplit = fieldValue.Replace("{", "").Replace("}", "").Split(',');
                         var list = listSplit.Select(int.Parse).ToList();
-                        if (fieldInfo != null) fieldInfo.SetValue(this, list);
+                        fieldInfo?.SetValue(this, list);
                     }
                     else
                     {
-                        if (fieldInfo != null)
-                            fieldInfo.SetValue(this, Convert.ChangeType(fieldValue, Type.GetType(fieldType)!));
+                        fieldInfo?.SetValue(this, Convert.ChangeType(fieldValue, Type.GetType(fieldType)!));
                     }
                 }
             
@@ -212,13 +204,13 @@ namespace Management
             } catch (Exception e)
             {
                 Debug.Log($"세이브 파일을 볼러올 수 없습니다. {e}");
-            } 
+            }
         }
         public void ResetData()
         {
             try
             {
-                File.Delete(Application.persistentDataPath + "/SaveFiles/Save.dat");
+                File.Delete(Application.persistentDataPath + "/PersonalizationFile/save.dat");
                 Debug.Log("세이브 파일 삭제 완료!");
                 
                 // 클래스의 필드들 모두 가져오기
@@ -235,6 +227,7 @@ namespace Management
                 Debug.Log($"세이브 파일을 삭제할 수 없습니다. {e}");
             }
         }
+#if (DEV)
         public string DebugInfo()
         {
             if (!Debug.isDebugBuild) return null;
@@ -270,6 +263,7 @@ namespace Management
             
             return saveData;
         }
+#endif
         /* !! Dont Touch !! */
     }
 }

@@ -1069,7 +1069,6 @@ GameObject:
   - component: {fileID: 525859685}
   - component: {fileID: 525859684}
   - component: {fileID: 525859683}
-  - component: {fileID: 525859682}
   m_Layer: 5
   m_Name: DevTools
   m_TagString: Untagged
@@ -1077,18 +1076,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &525859682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 525859681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af31f927ad33416db1c9918a6cce42c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &525859683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1900,6 +1887,7 @@ GameObject:
   m_Component:
   - component: {fileID: 701757559}
   - component: {fileID: 701757560}
+  - component: {fileID: 701757561}
   m_Layer: 5
   m_Name: BGM(TMP)
   m_TagString: Untagged
@@ -1980,6 +1968,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &701757561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701757558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4784b7102dac4287a507f74b7654c3cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &718281930
 GameObject:
   m_ObjectHideFlags: 0
@@ -6225,6 +6225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2128393057}
   - component: {fileID: 2128393058}
+  - component: {fileID: 2128393059}
   m_Layer: 5
   m_Name: SE(TMP)
   m_TagString: Untagged
@@ -6304,19 +6305,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+--- !u!114 &2128393059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128393056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4784b7102dac4287a507f74b7654c3cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

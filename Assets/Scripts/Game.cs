@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Management;
+using Managements;
 using UnityEngine;
 
 public class Game : MonoBehaviour
@@ -45,7 +45,7 @@ public class Game : MonoBehaviour
         yield return new WaitForSeconds(0.35f);
         FadeManager.Instance.FadeIn(0.1f);
         
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
         SeManager.Instance.Play2Shot(2);
         
     }

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Management
+namespace Managements
 {
     public class FadeManager : MonoBehaviour
     {
