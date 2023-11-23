@@ -38,15 +38,19 @@ public class Game : MonoBehaviour
     public IEnumerator GameOverDetect(float targetY)
     {
         ValueManager.Instance.IsPlaying = false;
-        StartCoroutine(CameraMove(targetY, 5));
+        
+        // targetY가 화면에 보이는지 확인
+        var targetPos = _camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
+        if (targetPos.y < 0) StartCoroutine(CameraMove(targetY, 5));
         yield return new WaitForSeconds(0.5f);
         SeManager.Instance.Play2Shot(4);
         FadeManager.Instance.WhiteFXFadeOut(0.1f);
-        yield return new WaitForSeconds(0.35f);
+        yield return new WaitForSeconds(0.3f);
         FadeManager.Instance.FadeIn(0.1f);
         
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.5f);
         SeManager.Instance.Play2Shot(2);
+        
         
     }
 }

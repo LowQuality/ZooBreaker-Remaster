@@ -16,8 +16,8 @@ namespace Managements
         private void Awake()
         {
             // 세이브할 폴더가 없으면 새로운 폴더 생성
-            if (!Directory.Exists(Application.persistentDataPath + "/SaveFiles"))
-                Directory.CreateDirectory(Application.persistentDataPath + "/SaveFiles");
+            if (!Directory.Exists(Application.persistentDataPath + "/PersonalizationFile"))
+                Directory.CreateDirectory(Application.persistentDataPath + "/PersonalizationFile");
             Load();
             
             if (Instance == null)
@@ -92,7 +92,7 @@ namespace Managements
                 /* 후처리 */
             } catch (Exception e)
             {
-                Debug.Log($"설정 파일을 저장할 수 없습니다. {e}");
+                Debug.LogError($"설정 파일을 저장할 수 없습니다. {e}");
             }
         }
         private void Load()
@@ -132,13 +132,16 @@ namespace Managements
                 Debug.Log($"설정 파일 불러오기 완료! | 불러온 데이터 보기 \n---\n{saveData}\n---");
             } catch (Exception e)
             {
-                Debug.Log($"설정 파일을 볼러올 수 없습니다. {e}");
-                if (!File.Exists(Application.persistentDataPath + "/Datas/config.dat"))
+                if (!File.Exists(Application.persistentDataPath + "/PersonalizationFile/config.dat"))
                 {
-                    Debug.Log("설정 파일이 없습니다. 기본값으로 초기화합니다.");
+                    Debug.LogWarning("설정 파일이 없습니다. 기본값으로 초기화합니다.");
                     _bgmVolume = 100;
                     _seVolume = 100;
                     Save();
+                }
+                else
+                {
+                    Debug.LogError($"설정 파일을 볼러올 수 없습니다. {e}");
                 }
             }
         }

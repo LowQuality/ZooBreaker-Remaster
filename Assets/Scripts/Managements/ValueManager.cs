@@ -154,13 +154,13 @@ namespace Managements
                 saveData = Convert.ToBase64String(Encoding.UTF8.GetBytes(saveData));
             
                 // 파일에 저장
-                File.WriteAllText(Application.persistentDataPath + "/SaveFiles/save.dat", saveData);
+                File.WriteAllText(Application.persistentDataPath + "/PersonalizationFile/save.dat", saveData);
             
                 // Debug.Log($"세이브 파일 저장 완료 | 저장된 데이터 보기 \n---\n{saveData}\n---");
                 /* 후처리 */
             } catch (Exception e)
             {
-                Debug.Log($"세이브 파일을 저장할 수 없습니다. {e}");
+                Debug.LogError($"세이브 파일을 저장할 수 없습니다. {e}");
             }
         }
         private void Load()
@@ -203,7 +203,7 @@ namespace Managements
                 Debug.Log($"세이브 파일 불러오기 완료! | 불러온 데이터 보기 \n---\n{saveData}\n---");
             } catch (Exception e)
             {
-                Debug.Log($"세이브 파일을 볼러올 수 없습니다. {e}");
+                Debug.LogError($"세이브 파일을 볼러올 수 없습니다. {e}");
             }
         }
         public void ResetData()
@@ -224,7 +224,7 @@ namespace Managements
                 // Debug.Log("메모리 초기화 완료!");
             } catch (Exception e)
             {
-                Debug.Log($"세이브 파일을 삭제할 수 없습니다. {e}");
+                Debug.LogError($"세이브 파일을 삭제할 수 없습니다. {e}");
             }
         }
 #if (DEV)
