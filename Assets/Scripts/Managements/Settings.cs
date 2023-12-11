@@ -153,7 +153,7 @@ namespace Managements
             var fields = typeof(Settings).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
             
             // 메모리에 저장된 데이터들을 문자열로 변환
-            return fields.Aggregate("", (current, field) => current + $"{field.Name}: {field.GetValue(this)}\n");
+            return fields.Aggregate("", (current, field) => current + $"[G] {field.Name}: {field.GetValue(this)}\n");
         }
 #endif
         /* !! Dont Touch !! */

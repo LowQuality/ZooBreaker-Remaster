@@ -2441,6 +2441,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29bd9f0fe67443838c6d70f475d56262, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isNotInGameScene:
+  - MainMenu
+  - StoryMenu
+  blocks:
+  - {fileID: 8004092314770766373, guid: 51db4fa8277590642a3e253b81f4907f, type: 3}
+  - {fileID: 8673090593460704651, guid: 8c2443de3108c2c4c81dc867b9e20c29, type: 3}
+  - {fileID: 5534396404295715931, guid: 59f3261601dbf0648b6d6e3632826a93, type: 3}
+  - {fileID: 6692664250732979487, guid: 822c8808e2337d34b99f4ed8874cbd72, type: 3}
+  - {fileID: 6912567600979939566, guid: 8ff5d85534806f24786df4830fb89269, type: 3}
 --- !u!114 &779952919
 MonoBehaviour:
   m_ObjectHideFlags: 0
