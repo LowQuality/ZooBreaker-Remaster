@@ -16,6 +16,8 @@ namespace Game
         [SerializeField] private GameObject hiddenBlockObject;
         [SerializeField] private TextMeshProUGUI hiddenBlockCount;
         [SerializeField] private GameObject[] blockQueueLocations;
+        [SerializeField] private GameObject[] blockQueuePrefabs;
+        [SerializeField] private GameObject[] blockPrefabs;
 
         /* Unity API */
         private void Start()
@@ -92,28 +94,91 @@ namespace Game
             }
             
             var queuedBlocks = ValueManager.Instance.QueuedBlocks();
-
-            // 숨겨진 블록 개수 반영
+            
             if (queuedBlocks.Count > 6)
             {
-                switch (ValueManager.Instance.GameMode)
+                // 숨겨진 블록 개수 반영
+                if (ValueManager.Instance.GameMode == 1)
                 {
-                    case 1:
-                        hiddenBlockObject.SetActive(true);
-                        hiddenBlockCount.text = $"+{queuedBlocks.Count - 6}";
-                        break;
-                    case 2:
-                        hiddenBlockObject.SetActive(true);
-                        hiddenBlockCount.text = "";
-                        break;
+                    hiddenBlockObject.SetActive(true);
+                    hiddenBlockCount.text = $"+{queuedBlocks.Count - 6}";
+                }
+                else
+                {
+                    hiddenBlockObject.SetActive(true);
+                    hiddenBlockCount.text = "";
+                }
+                
+                // TODO 에니메이션 구현하기
+                // 큐에 있는 블록들 모두 제거
+                foreach (var block in GameObject.FindGameObjectsWithTag("BlockQueue"))
+                {
+                    Destroy(block);
+                }
+            
+                var blockInfos = ValueManager.Instance.QueuedBlocks();
+
+                // TODO NowDropBlock에서 오브젝트 위치 조정하기
+                // 큐에 있는 블록들 모두 생성
+                for (var i = 0; i < 5; i++)
+                {
+                    var blockInfo = blockInfos[i].Split("/");
+                    var id = int.Parse(blockInfo[0]);
+                    var size = int.Parse(blockInfo[1]);
+                    var rotation = int.Parse(blockInfo[2]);
+                    
+                    var block = Instantiate(blockQueuePrefabs[id], blockQueueLocations[i].transform);
+                    
+                    // GameObject에서 TextMeshProUGUI를 가져옴
+                    var blockTMP = block.GetComponentInChildren<TextMeshProUGUI>();
+                    var blockSize = blockTMP.text.Split("x");
+                    
+                    // 큐에 있는 블록들의 크기 반영
+                    var x = int.Parse(blockSize[0]);
+                    var y = int.Parse(blockSize[1]);
+                    blockTMP.text = $"{x*size}x{y*size}";
+                    
+                    // 큐에 있는 블록들의 회전 반영
+                    block.transform.rotation = Quaternion.Euler(0, 0, rotation * 90);
                 }
             }
             else
             {
                 hiddenBlockObject.SetActive(false);
-            }
+                
+                // TODO 에니메이션 구현하기
+                // 큐에 있는 블록들 모두 제거
+                foreach (var block in GameObject.FindGameObjectsWithTag("BlockQueue"))
+                {
+                    Destroy(block);
+                }
             
-            // TODO:블록 큐 위치 반영
+                var blockInfos = ValueManager.Instance.QueuedBlocks();
+
+                // TODO NowDropBlock에서 오브젝트 위치 조정하기
+                // 큐에 있는 블록들 모두 생성
+                for (var i = 0; i < 6; i++)
+                {
+                    var blockInfo = blockInfos[i].Split("/");
+                    var id = int.Parse(blockInfo[0]);
+                    var size = int.Parse(blockInfo[1]);
+                    var rotation = int.Parse(blockInfo[2]);
+                    
+                    var block = Instantiate(blockQueuePrefabs[id], blockQueueLocations[i].transform);
+                    
+                    // GameObject에서 TextMeshProUGUI를 가져옴
+                    var blockTMP = block.GetComponentInChildren<TextMeshProUGUI>();
+                    var blockText = blockTMP.text.Split();
+                    
+                    // 큐에 있는 블록들의 크기 반영
+                    var x = int.Parse(blockText[0]);
+                    var y = int.Parse(blockText[2]);
+                    blockTMP.text = $"{x*size}x{y*size}";
+                    
+                    // 큐에 있는 블록들의 회전 반영
+                    block.transform.rotation = Quaternion.Euler(0, 0, rotation * 90);
+                }
+            }
             
 
             yield return null;

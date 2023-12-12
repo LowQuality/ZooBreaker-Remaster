@@ -40,8 +40,8 @@ namespace SceneOnly
                 if (ValueManager.Instance.QueuedBlocks().Count < 8)
                 {
                     ValueManager.Instance.IsGeneratingBlock = true;
-                    var id = random.Next(1, 3);
-                    var size = random.Next(1, maxBlockSize);
+                    var id = random.Next(0, 3);
+                    var size = random.Next(1, maxBlockSize + 1);
                     const int rotation = 0;
 
                     ValueManager.Instance.QueuedBlocks(id, size, rotation);
