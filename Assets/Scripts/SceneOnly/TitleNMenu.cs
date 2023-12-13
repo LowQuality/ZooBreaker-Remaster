@@ -11,6 +11,7 @@ namespace SceneOnly
         /* Unity API */
         private void Start()
         {
+            FadeManager.Instance.FadeIn(0.1f);
             StartCoroutine(ResetData());
             StartCoroutine(SoundSettings());
             BGMManager.Instance.FadeInNPlay(0);
@@ -23,6 +24,8 @@ namespace SceneOnly
         [SerializeField] private GameObject records;
         [SerializeField] private GameObject settings;
         [SerializeField] private GameObject help;
+        
+        [SerializeField] private GameObject resetData;
         
         [SerializeField] private Slider bgmSlider;
         [SerializeField] private Slider seSlider;
@@ -66,6 +69,22 @@ namespace SceneOnly
         {
             StartCoroutine(Exit());
         }
+        public void DataResetClick()
+        {
+            SeManager.Instance.Play2Shot(7);
+            resetData.SetActive(true);
+        }
+        public void DataResetConfirmClick()
+        {
+            SeManager.Instance.Play2Shot(7);
+            resetData.SetActive(false);
+            ValueManager.Instance.ResetData();
+        }
+        public void DataResetCancelClick()
+        {
+            SeManager.Instance.Play2Shot(7);
+            resetData.SetActive(false);
+        }
         
         /* Coroutines */
         private IEnumerator Title2Menu()
@@ -76,7 +95,6 @@ namespace SceneOnly
             SceneSetActivates(false, true, false, false, false);
             FadeManager.Instance.FadeIn(0.1f);
         }
-
         private IEnumerator Menu2StoryMode()
         {
             SeManager.Instance.Play2Shot(7);
@@ -86,7 +104,6 @@ namespace SceneOnly
             yield return new WaitForSeconds(0.5f);
             SceneManager.LoadScene("StoryMenu");
         }
-        
         private IEnumerator Menu2EndlessMode()
         {
             SeManager.Instance.Play2Shot(7);
@@ -96,7 +113,6 @@ namespace SceneOnly
             yield return new WaitForSeconds(0.5f);
             SceneManager.LoadScene("EndlessMode");
         }
-        
         private IEnumerator Menu2Records()
         {
             SeManager.Instance.Play2Shot(7);
@@ -105,7 +121,6 @@ namespace SceneOnly
             SceneSetActivates(false, false, true, false, false);
             FadeManager.Instance.FadeIn(0.1f);
         }
-        
         private IEnumerator Menu2Settings()
         {
             SeManager.Instance.Play2Shot(7);
@@ -114,7 +129,6 @@ namespace SceneOnly
             SceneSetActivates(false, false, false, true, false);
             FadeManager.Instance.FadeIn(0.1f);
         }
-        
         private IEnumerator Menu2Help()
         {
             SeManager.Instance.Play2Shot(7);
@@ -123,7 +137,6 @@ namespace SceneOnly
             SceneSetActivates(false, false, false, false, true);
             FadeManager.Instance.FadeIn(0.1f);
         }
-        
         private static IEnumerator Exit()
         {
             SeManager.Instance.Play2Shot(7);
@@ -131,7 +144,6 @@ namespace SceneOnly
             yield return new WaitForSeconds(0.5f);
             Application.Quit();
         }
-
         private static IEnumerator ResetData()
         {
             var resetData = 0;
@@ -146,7 +158,6 @@ namespace SceneOnly
             }
             // ReSharper disable once IteratorNeverReturns
         }
-        
         private IEnumerator SoundSettings()
         {
             bgmSlider.value = Settings.Instance.BgmVolume;

@@ -8,6 +8,8 @@ namespace SceneOnly
     public class EndlessMode : MonoBehaviour
     {
         [SerializeField] private int maxBlockSize;
+        [SerializeField] private GameObject startText;
+        
         /* Unity API */
         private void Awake()
         {
@@ -20,11 +22,15 @@ namespace SceneOnly
             SeManager.Instance.Play2Shot(11);
             ValueManager.Instance.GameMode = 2;
             ValueManager.Instance.IsGeneratingBlock = true;
-            ValueManager.Instance.IsPlaying = true;
             yield return new WaitForSeconds(0.1f);
             FadeManager.Instance.FadeIn(0.1f);
-
             StartCoroutine(GenerateBlocks());
+            yield return new WaitForSeconds(0.05f);
+            startText.SetActive(true);
+            
+            yield return new WaitForSeconds(0.3f);
+            startText.SetActive(false);
+            ValueManager.Instance.IsPlaying = true;
         }
         private IEnumerator GenerateBlocks()
         {
