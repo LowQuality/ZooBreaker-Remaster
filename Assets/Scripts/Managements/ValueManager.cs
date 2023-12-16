@@ -160,12 +160,12 @@ namespace Managements
         }
         
         [Description("블록 대기열을 추가 하거나 가져옵니다.")]
-        public List<string> QueuedBlocks(int id = -1, int size = -1, int rotation = -1)
+        public List<string> QueuedBlocks(int id = -1, int size = -1, int rotation = -1, int style = -1)
         {
             _LOC_queuedBlocks ??= new List<string>();
-            if (id != -1 && size != -1 && rotation != -1)
+            if (id != -1 && size != -1 && rotation != -1 && style != -1)
             {
-                _LOC_queuedBlocks.Add($"{id}/{size}/{rotation}");
+                _LOC_queuedBlocks.Add($"{id}/{size}/{rotation}/{style}");
             }
             else
             {

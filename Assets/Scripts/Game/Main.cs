@@ -101,6 +101,7 @@ namespace Game
             var id = int.Parse(blockInfo[0]);
             var size = int.Parse(blockInfo[1]);
             var rotation = int.Parse(blockInfo[2]);
+            var style = int.Parse(blockInfo[3]);
             
             // 현제 마우스 위치를 가져옴
             var mousePosition = camera.ScreenToWorldPoint(Input.mousePosition);
@@ -108,7 +109,7 @@ namespace Game
             // 블록을 생성 / 사운드 재생
             SeManager.Instance.Play2Shot(9);
             ValueManager.Instance.CanDropBlock = false;
-            var block = Instantiate(blockPrefabs[id], mousePosition, Quaternion.Euler(0, 0, rotation * 90), blockStore.transform);
+            var block = Instantiate(blockPrefabs[id + style * 5], mousePosition, Quaternion.Euler(0, 0, rotation * 90), blockStore.transform);
             block.transform.localScale = new Vector3(size * 2, size * 2, 1);
             block.GetComponent<Rigidbody2D>().mass = size;
             
@@ -169,11 +170,12 @@ namespace Game
                     var id = int.Parse(blockInfo[0]);
                     var size = int.Parse(blockInfo[1]);
                     var rotation = int.Parse(blockInfo[2]);
+                    var style = int.Parse(blockInfo[3]);
 
                     // imagineBlock이 null이면 imagineBlock을 생성
                     if (_imagineBlock == null)
                     {
-                        _imagineBlock = Instantiate(blockPrefabs[id], position,
+                        _imagineBlock = Instantiate(blockPrefabs[id + style * 5], position,
                             Quaternion.Euler(0, 0, rotation * 90));
                         _imagineBlock.transform.SetAsFirstSibling();
                         _imagineBlock.transform.localScale = new Vector3(size * 2, size * 2, 1);

@@ -17,6 +17,7 @@ namespace SceneOnly
         [SerializeField] private List<string> blockIDPercentage;
         [SerializeField] private List<string> blockSizePercentage;
         [SerializeField] private List<string> blockRotationPercentage;
+        [SerializeField] private List<string> blockStylePercentage;
         
         private Camera _camera;
         private int _nowHighestHeight;
@@ -108,8 +109,20 @@ namespace SceneOnly
                         rotation = i;
                         break;
                     }
+                    
+                    // 블록의 스타일을 랜덤으로 정함
+                    percentage = random.Next(0, 101);
+                    var style = 0;
+                    for (var i = 0; i < blockStylePercentage.Count; i++)
+                    {
+                        var percentageMinMax = blockStylePercentage[i].Split('~');
+                        if (percentage < int.Parse(percentageMinMax[0]) ||
+                            percentage > int.Parse(percentageMinMax[1])) continue;
+                        style = i;
+                        break;
+                    }
 
-                    ValueManager.Instance.QueuedBlocks(id, size, rotation);
+                    ValueManager.Instance.QueuedBlocks(id, size, rotation, style);
                 }
                 else
                 {
