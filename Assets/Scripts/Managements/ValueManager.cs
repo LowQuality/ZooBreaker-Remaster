@@ -79,11 +79,12 @@ namespace Managements
             {
                 _GLO_endlessModeHighScore ??= new List<int>();
                 _GLO_endlessModeHighScore.Add(score);
-                // 최고 점수가 6개 이상이면 6개만 저장후 정렬
+                
+                _GLO_endlessModeHighScore.Sort();
+                _GLO_endlessModeHighScore.Reverse();
+                // 최고 점수가 6개 이상이면 6개만 저장
                 if (_GLO_endlessModeHighScore.Count >= 6)
                 {
-                    _GLO_endlessModeHighScore.Sort();
-                    _GLO_endlessModeHighScore.Reverse();
                     _GLO_endlessModeHighScore.RemoveRange(6, _GLO_endlessModeHighScore.Count - 6);
                 }
 
