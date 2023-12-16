@@ -3215,9 +3215,10 @@ MonoBehaviour:
   - -1~-1
   - -1~-1
   blockSizePercentage:
-  - 0~34
-  - 35~67
-  - 68~100
+  - 0~25
+  - 26~50
+  - 51~75
+  - 76~100
   blockRotationPercentage:
   - 0~100
   - -1~-1

@@ -110,6 +110,7 @@ namespace Game
             ValueManager.Instance.CanDropBlock = false;
             var block = Instantiate(blockPrefabs[id], mousePosition, Quaternion.Euler(0, 0, rotation * 90), blockStore.transform);
             block.transform.localScale = new Vector3(size * 2, size * 2, 1);
+            block.GetComponent<Rigidbody2D>().mass = size;
             
             StartCoroutine(RemoveQueueAndUpdate());
         }

@@ -86,12 +86,13 @@ namespace SceneOnly
                     
                     // 블록의 크기를 랜덤으로 정함
                     percentage = random.Next(0, 101);
+                    Debug.Log(percentage);
                     var size = 0;
                     for (var i = 0; i < blockSizePercentage.Count; i++)
                     {
                         var percentageMinMax = blockSizePercentage[i].Split('~');
-                        if (percentage <= int.Parse(percentageMinMax[0]) ||
-                            percentage >= int.Parse(percentageMinMax[1])) continue;
+                        if (percentage < int.Parse(percentageMinMax[0]) ||
+                            percentage > int.Parse(percentageMinMax[1])) continue;
                         size = i + 1;
                         break;
                     }
