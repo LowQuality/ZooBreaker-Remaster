@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Game;
 using Managements;
+using TMPro;
 using UnityEngine;
 using Random = System.Random;
 
@@ -11,15 +12,18 @@ namespace SceneOnly
     {
         [SerializeField] private int maxBlockSize;
         [SerializeField] private GameObject startText;
+        [SerializeField] private TextMeshProUGUI bestScoreText;
+        [SerializeField] private TextMeshProUGUI nowScoreText;
         
         private Camera _camera;
+        private int _nowHighestHeight;
         
         /* Unity API */
         private void Awake()
         {
             _camera = Camera.main;
             StartCoroutine(GameStart());
-            StartCoroutine(SendScore());
+            StartCoroutine(SendAndUpdateScore());
             StartCoroutine(DynamicCamera());
             
             // Rank Test Sample
@@ -76,12 +80,16 @@ namespace SceneOnly
                 }
             }
         }
-        private static IEnumerator SendScore()
+        private IEnumerator SendAndUpdateScore()
         {
+            var bestScores = ValueManager.Instance.EndlessModeHighScore();
             while (!ValueManager.Instance.IsGameEnded)
             {
                 yield return null;
+                bestScoreText.text = ValueManager.Instance.BlockBestHeight > bestScores[0] ? $"{ValueManager.Instance.BlockBestHeight}<color=#FF8047>m</color>" : $"{bestScores[0]}<color=#FF8047>m</color>";
+                nowScoreText.text = $"{_nowHighestHeight}<color=#FF8047>m</color>";
             }
+
             ValueManager.Instance.EndlessModeHighScore(ValueManager.Instance.BlockBestHeight);
         }
         private IEnumerator DynamicCamera()
@@ -89,8 +97,8 @@ namespace SceneOnly
             while (true)
             {
                 yield return new WaitForSeconds(0.25f);
-                ValueManager.Instance.BlockBestHeight = Mathf.FloorToInt(Main.Instance.GetHighestBlockHeight());
-                Debug.Log($"nowHeight: {Mathf.FloorToInt(Main.Instance.GetHighestBlockHeight())}m");
+                _nowHighestHeight = Mathf.FloorToInt(Main.Instance.GetHighestBlockHeight());
+                ValueManager.Instance.BlockBestHeight = _nowHighestHeight;
             
                 // 만약 엔드리스 모드 이고 카메라 높이가 블록의 높이보다 낮다고 최대 높이보다 높으면 카메라 높이를 블록의 높이로 변경
                 if (_camera.transform.position.y < ValueManager.Instance.BlockBestHeight && ValueManager.Instance.GameMode == 2 && !ValueManager.Instance.IsGameEnded)

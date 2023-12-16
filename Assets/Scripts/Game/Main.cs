@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Managements;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -24,9 +27,15 @@ namespace Game
         [SerializeField] private GameObject[] blockQueuePrefabs;
         [SerializeField] private GameObject[] blockPrefabs;
         [SerializeField] private GameObject blockStore;
+        [SerializeField] private EventSystem eventSystem;
+        [SerializeField] private GraphicRaycaster graphicRayCaster;
 
         private int _queueUpdateCount;
-        
+        private bool _catchingBlock;
+
+        private PointerEventData _pointerEventData;
+        private GameObject _imagineBlock;
+
         // 카메라 이동 관련 변수
         private bool _isCameraMoving;
         private float _elapsedCameraLerpTime;
@@ -38,6 +47,7 @@ namespace Game
         private void Start()
         {
             StartCoroutine(InitQueue());
+            StartCoroutine(DetectMouse());
         }
 
         private void Awake()
@@ -117,6 +127,70 @@ namespace Game
         }
 
         /* Coroutines */
+        private IEnumerator DetectMouse() 
+        {
+            while (true)
+            {
+                yield return null;
+                if (ValueManager.Instance.IsGameEnded || !ValueManager.Instance.IsPlaying || ValueManager.Instance.IsGamePaused || !ValueManager.Instance.CanDropBlock) continue;
+                
+                // 마우스 위치에 특정 오브젝트가 있는지 확인
+                var mousePosition = Input.mousePosition;
+                _pointerEventData = new PointerEventData(eventSystem)
+                {
+                    position = mousePosition
+                };
+                var results = new List<RaycastResult>();
+                graphicRayCaster.Raycast(_pointerEventData, results);
+
+                var hit = results.Count(result => result.gameObject.CompareTag("Droppable"));
+                var position = new Vector3(camera.ScreenToWorldPoint(Input.mousePosition).x,
+                    camera.ScreenToWorldPoint(Input.mousePosition).y, -10);
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (hit == 0) continue;
+                    _catchingBlock = true;
+                    
+                    blockQueueLocations[0].SetActive(false);
+                    
+                    // 현제 떨어뜨릴 블록의 정보를 가져옴
+                    var blockInfo = ValueManager.Instance.QueuedBlocks()[0].Split("/");
+                    var id = int.Parse(blockInfo[0]);
+                    var size = int.Parse(blockInfo[1]);
+                    var rotation = int.Parse(blockInfo[2]);
+
+                    // imagineBlock이 null이면 imagineBlock을 생성
+                    if (_imagineBlock == null)
+                    {
+                        _imagineBlock = Instantiate(blockPrefabs[id], position,
+                            Quaternion.Euler(0, 0, rotation * 90));
+                        _imagineBlock.transform.SetAsFirstSibling();
+                        _imagineBlock.transform.localScale = new Vector3(size * 2, size * 2, 1);
+                        _imagineBlock.GetComponent<Blocks>().enabled = false;
+                        _imagineBlock.GetComponent<Collider2D>().enabled = false;
+                        _imagineBlock.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+                    }
+                }
+
+                if (Input.GetMouseButton(0))
+                {
+                    if (_imagineBlock == null) continue;
+                    _imagineBlock.transform.position = position;
+                }
+
+                if (Input.GetMouseButtonUp(0) && _catchingBlock)
+                {
+                    Destroy(_imagineBlock);
+                    _imagineBlock = null;
+                    blockQueueLocations[0].SetActive(true);
+                    
+                    if (hit == 1) continue;
+                    BlockDrop();
+                    _catchingBlock = false;
+                }
+            }
+        }
         public IEnumerator CameraMove(float y, float cameraSpeed = 1f, float duration = 1f)
         {
             if (_endCameraPos.y >= y) yield break;
@@ -160,6 +234,9 @@ namespace Game
         public IEnumerator GameOverDetect(float targetY)
         {
             ValueManager.Instance.IsGameEnded = true;
+            
+            Destroy(_imagineBlock);
+            blockQueueLocations[0].SetActive(true);
 
             // targetY가 화면에 보이는지 확인
             var targetPos = camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
@@ -244,6 +321,8 @@ namespace Game
                 
                 if (i == 0)
                 {
+                    block.transform.SetAsFirstSibling();
+                    
                     // NowDropBlock 오브젝트 위치 조정
                     block.transform.GetChild(0).localPosition = Vector3.zero;
                     block.transform.GetChild(1).localPosition = Vector3.zero;
@@ -266,7 +345,7 @@ namespace Game
 
             yield return null;
         }
-        public IEnumerator RemoveQueueAndUpdate()
+        private IEnumerator RemoveQueueAndUpdate()
         {
             // queueUpdateCount가 0일 때까지 대기
             while (_queueUpdateCount != 0)
@@ -348,6 +427,7 @@ namespace Game
 
                 if (i == 1)
                 {
+                    block.transform.SetAsFirstSibling();
                     block.transform.GetChild(0).localPosition = Vector3.zero;
                     block.transform.GetChild(1).localPosition = Vector3.zero;
                 }

@@ -16,14 +16,17 @@ namespace Game
         /* Unity API */
         private void Start()
         {
-            // Last 태그를 가진 블록 모두 태그 제거
-            var lastBlocks = GameObject.FindGameObjectsWithTag("Last");
-            foreach (var lastBlock in lastBlocks)
+            if (transform.parent.name.Contains("BlockStore"))
             {
-                lastBlock.tag = "Untagged";
+                // Last 태그를 가진 블록 모두 태그 제거
+                var lastBlocks = GameObject.FindGameObjectsWithTag("Last");
+                foreach (var lastBlock in lastBlocks)
+                {
+                    lastBlock.tag = "Untagged";
+                }
+                // 이 블록을 Last 태그로 변경
+                gameObject.tag = "Last";
             }
-            // 이 블록을 Last 태그로 변경
-            gameObject.tag = "Last";
             
             _camera = Camera.main;
             StartCoroutine(CheckIsPlaying());

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Last
   - BlockQueue
+  - Droppable
   layers:
   - Default
   - TransparentFX

@@ -176,4 +176,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBody2D: {fileID: 4943398381929470369}
-  spriteRenderer: {fileID: 4662091469371747181}
+  playedCrashSound: 0
