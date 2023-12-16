@@ -62,12 +62,14 @@ namespace Game
         public void PauseButton()
         {
             if (ValueManager.Instance.IsGameEnded || !ValueManager.Instance.IsPlaying) return;
+            ResetImagineBlock();
             ValueManager.Instance.IsGamePaused = true;
             pausePanel.SetActive(true);
         }
         public void MenuButton()
         {
             if (ValueManager.Instance.IsGameEnded || !ValueManager.Instance.IsPlaying) return;
+            ResetImagineBlock();
             ValueManager.Instance.IsGamePaused = true;
             menuPanel.SetActive(true);
         }
