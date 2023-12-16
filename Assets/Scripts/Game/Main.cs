@@ -111,6 +111,13 @@ namespace Game
             
             StartCoroutine(RemoveQueueAndUpdate());
         }
+        public void ResetImagineBlock()
+        {
+            if (_imagineBlock == null) return;
+            Destroy(_imagineBlock);
+            _imagineBlock = null;
+            blockQueueLocations[0].SetActive(true);
+        }
         public int GetHighestBlockHeight()
         {
             var highestBlockHeight = 0;
@@ -179,7 +186,7 @@ namespace Game
                     _imagineBlock.transform.position = position;
                 }
 
-                if (Input.GetMouseButtonUp(0) && _catchingBlock)
+                if (Input.GetMouseButtonUp(0) && _catchingBlock && _imagineBlock != null)
                 {
                     Destroy(_imagineBlock);
                     _imagineBlock = null;
