@@ -31,8 +31,10 @@ namespace Managements
         private bool _LOC_isGameEnded;
         private bool _LOC_isGamePaused;
         private bool _LOC_isGeneratingBlock;
+        private bool _LOC_canDropBlock;
         private int _LOC_gameMode;
         private int _LOC_gameSeed;
+        private int _LOC_blockBestHeight;
         private List<string> _LOC_queuedBlocks = new();
         
 
@@ -104,8 +106,8 @@ namespace Managements
         [Description("게임이 끝났는지 여부를 나타냅니다.")]
         public bool IsGameEnded
         {
-            get => _LOC_isGamePaused;
-            set => _LOC_isGamePaused = value;
+            get => _LOC_isGameEnded;
+            set => _LOC_isGameEnded = value;
         }
         
         [Description("게임이 일시정지되었는지 여부를 나타냅니다.")] 
@@ -122,6 +124,13 @@ namespace Managements
             set => _LOC_isGeneratingBlock = value;
         }
         
+        [Description("블록이 떨어질 수 있는지 여부를 나타냅니다.")]
+        public bool CanDropBlock
+        {
+            get => _LOC_canDropBlock;
+            set => _LOC_canDropBlock = value;
+        }
+        
         [Description("게임 모드를 나타냅니다. (1 : 일반, 2 : 엔드리스)")]
         public int GameMode
         {
@@ -136,6 +145,19 @@ namespace Managements
             set => _LOC_gameSeed = value;
         }
         
+        [Description("블록의 최고 높이를 나타냅니다.")]
+        public int BlockBestHeight
+        {
+            get => _LOC_blockBestHeight;
+            set
+            {
+                if (value > _LOC_blockBestHeight)
+                {
+                    _LOC_blockBestHeight = value;
+                }
+            }
+        }
+        
         [Description("블록 대기열을 추가 하거나 가져옵니다.")]
         public List<string> QueuedBlocks(int id = -1, int size = -1, int rotation = -1)
         {
@@ -143,7 +165,6 @@ namespace Managements
             if (id != -1 && size != -1 && rotation != -1)
             {
                 _LOC_queuedBlocks.Add($"{id}/{size}/{rotation}");
-                Save();
             }
             else
             {

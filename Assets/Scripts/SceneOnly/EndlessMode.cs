@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using Game;
 using Managements;
 using UnityEngine;
+using Random = System.Random;
 
 namespace SceneOnly
 {
@@ -10,10 +12,25 @@ namespace SceneOnly
         [SerializeField] private int maxBlockSize;
         [SerializeField] private GameObject startText;
         
+        private Camera _camera;
+        
         /* Unity API */
         private void Awake()
         {
+            _camera = Camera.main;
             StartCoroutine(GameStart());
+            StartCoroutine(SendScore());
+            StartCoroutine(DynamicCamera());
+            
+            // Rank Test Sample
+            // ValueManager.Instance.EndlessModeHighScore(49849894);
+            // ValueManager.Instance.EndlessModeHighScore(419871651);
+            // ValueManager.Instance.EndlessModeHighScore(1561651632);
+            // ValueManager.Instance.EndlessModeHighScore(21165);
+            // ValueManager.Instance.EndlessModeHighScore(4918);
+            // ValueManager.Instance.EndlessModeHighScore(89489);
+            // ValueManager.Instance.EndlessModeHighScore(149811);
+            // ValueManager.Instance.EndlessModeHighScore(149811486);
         }
         
         /* Coroutines */
@@ -31,13 +48,14 @@ namespace SceneOnly
             yield return new WaitForSeconds(0.3f);
             startText.SetActive(false);
             ValueManager.Instance.IsPlaying = true;
+            ValueManager.Instance.CanDropBlock = true;
         }
         private IEnumerator GenerateBlocks()
         {
             // has Y2K38 Problem
             var seed = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             ValueManager.Instance.GameSeed = seed;
-            var random = new System.Random(seed);
+            var random = new Random(seed);
             
             while (true)
             {
@@ -55,6 +73,30 @@ namespace SceneOnly
                 else
                 {
                     ValueManager.Instance.IsGeneratingBlock = false;
+                }
+            }
+        }
+        private static IEnumerator SendScore()
+        {
+            while (!ValueManager.Instance.IsGameEnded)
+            {
+                yield return null;
+            }
+            ValueManager.Instance.EndlessModeHighScore(ValueManager.Instance.BlockBestHeight);
+        }
+        private IEnumerator DynamicCamera()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(0.25f);
+                ValueManager.Instance.BlockBestHeight = Mathf.FloorToInt(Main.Instance.GetHighestBlockHeight());
+                Debug.Log($"nowHeight: {Mathf.FloorToInt(Main.Instance.GetHighestBlockHeight())}m");
+            
+                // 만약 엔드리스 모드 이고 카메라 높이가 블록의 높이보다 낮다고 최대 높이보다 높으면 카메라 높이를 블록의 높이로 변경
+                if (_camera.transform.position.y < ValueManager.Instance.BlockBestHeight && ValueManager.Instance.GameMode == 2 && !ValueManager.Instance.IsGameEnded)
+                {
+                    // 카메라 높이 변경
+                    Main.Instance.StartCoroutine(Main.Instance.CameraMove(ValueManager.Instance.BlockBestHeight + 0.5f));
                 }
             }
         }

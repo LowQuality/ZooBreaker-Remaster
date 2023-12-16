@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Managements;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -22,6 +23,16 @@ namespace Game
         [SerializeField] private GameObject[] blockQueueLocations;
         [SerializeField] private GameObject[] blockQueuePrefabs;
         [SerializeField] private GameObject[] blockPrefabs;
+        [SerializeField] private GameObject blockStore;
+
+        private int _queueUpdateCount;
+        
+        // 카메라 이동 관련 변수
+        private bool _isCameraMoving;
+        private float _elapsedCameraLerpTime;
+        private float _timeToMoveCamera;
+        private Vector3 _startCameraPos;
+        private Vector3 _endCameraPos;
 
         /* Unity API */
         private void Start()
@@ -68,7 +79,107 @@ namespace Game
             StartCoroutine(MainMenu());
         }
 
+        public void BlockDrop()
+        {
+            // 게임이 끝나거나 일시정지 상태일 때 블록이 떨어지지 않도록 함
+            if (ValueManager.Instance.IsGameEnded || !ValueManager.Instance.IsPlaying || ValueManager.Instance.IsGamePaused || !ValueManager.Instance.CanDropBlock) return;
+            
+            // 현제 떨어뜨릴 블록의 정보를 가져옴
+            var blockInfo = ValueManager.Instance.QueuedBlocks()[0].Split("/");
+            var id = int.Parse(blockInfo[0]);
+            var size = int.Parse(blockInfo[1]);
+            var rotation = int.Parse(blockInfo[2]);
+            
+            // 현제 마우스 위치를 가져옴
+            var mousePosition = camera.ScreenToWorldPoint(Input.mousePosition);
+            
+            // 블록을 생성 / 사운드 재생
+            SeManager.Instance.Play2Shot(9);
+            ValueManager.Instance.CanDropBlock = false;
+            var block = Instantiate(blockPrefabs[id], mousePosition, Quaternion.Euler(0, 0, rotation * 90), blockStore.transform);
+            block.transform.localScale = new Vector3(size * 2, size * 2, 1);
+            
+            StartCoroutine(RemoveQueueAndUpdate());
+        }
+        public int GetHighestBlockHeight()
+        {
+            var highestBlockHeight = 0;
+            for (var i = 0; i < blockStore.transform.childCount; i++)
+            {
+                var block = blockStore.transform.GetChild(i);
+
+                if (block.CompareTag("Last") && !block.GetComponent<Blocks>().playedCrashSound) continue;
+                var blockSprite = block.GetComponent<SpriteRenderer>();
+                var blockHeight = Mathf.FloorToInt(block.transform.position.y + blockSprite.bounds.size.y / 2f);
+                if (highestBlockHeight < blockHeight) highestBlockHeight = blockHeight;
+            }
+            return highestBlockHeight;
+        }
+
         /* Coroutines */
+        public IEnumerator CameraMove(float y, float cameraSpeed = 1f, float duration = 1f)
+        {
+            if (_endCameraPos.y >= y) yield break;
+            // 이미 카메라가 움직이고 있을 때 작동
+            if (_isCameraMoving)
+            {
+                // 카메라 시작 위치를 현제 카메라 위치로 변경
+                _startCameraPos = camera.transform.position;
+                
+                // 카메라 이동 끝 위치를 y로 변경
+                _endCameraPos = new Vector3(0, y, 0);
+                
+                // 시간 초기화
+                _elapsedCameraLerpTime = 0f;
+                _timeToMoveCamera = 0f;
+                
+                yield break;
+            }
+            _isCameraMoving = true;
+            
+            _startCameraPos = camera.transform.position;
+            _endCameraPos = new Vector3(0, y, 0);
+
+            while (_timeToMoveCamera < 1)
+            {
+                _elapsedCameraLerpTime += Time.deltaTime * cameraSpeed;
+                // Math Time! _elapsedCameraLerpTime means x, t means y (Calc : https://www.desmos.com/calculator/g1mjeudvoa)
+                _timeToMoveCamera = (_elapsedCameraLerpTime - 1) * (_elapsedCameraLerpTime - 1) * (_elapsedCameraLerpTime - 1) + 1 / duration;
+                transform.position = Vector3.Lerp(_startCameraPos, _endCameraPos, _timeToMoveCamera);
+                yield return null;
+            }
+            transform.position = _endCameraPos;
+            // 변수 초기화
+            _elapsedCameraLerpTime = 0f;
+            _timeToMoveCamera = 0f;
+            _startCameraPos = Vector3.zero;
+            _endCameraPos = Vector3.zero;
+            
+            _isCameraMoving = false;
+        }
+        public IEnumerator GameOverDetect(float targetY)
+        {
+            ValueManager.Instance.IsGameEnded = true;
+
+            // targetY가 화면에 보이는지 확인
+            var targetPos = camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
+            if (targetPos.y < 0) StartCoroutine(CameraMove(targetY, 8f));
+            yield return new WaitForSeconds(0.5f);
+            SeManager.Instance.Play2Shot(4);
+            FadeManager.Instance.WhiteFXFadeOut(0.1f);
+            yield return new WaitForSeconds(0.1f);
+            gameOverText.SetActive(true);
+            FadeManager.Instance.FadeIn(0.1f);
+            
+            yield return new WaitForSeconds(2.0f);
+            gameOverText.SetActive(false);
+            yield return new WaitForSeconds(0.5f);
+            
+            SeManager.Instance.Play2Shot(2);
+            retryPanel.SetActive(true);
+        }
+
+        // UIs
         private IEnumerator InitQueue()
         {
             // ValueManager.Instance.IsGeneratingBlock 이 false가 될 때까지 대기
@@ -119,6 +230,13 @@ namespace Game
                 var rotation = int.Parse(blockInfo[2]);
                     
                 var block = Instantiate(blockQueuePrefabs[id], blockQueueLocations[i].transform);
+                
+                // 부모 오브젝트의 width와 height의 값으로 크기 조정
+                var queueBlockRectTransform = block.GetComponent<RectTransform>();
+                var blockQueueLocationRectTransform = blockQueueLocations[i].GetComponent<RectTransform>();
+                
+                queueBlockRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, blockQueueLocationRectTransform.rect.width);
+                queueBlockRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, blockQueueLocationRectTransform.rect.height);
                     
                 // GameObject에서 TextMeshProUGUI를 가져옴
                 var blockTMP = block.GetComponentInChildren<TextMeshProUGUI>();
@@ -148,44 +266,14 @@ namespace Game
 
             yield return null;
         }
-        public IEnumerator CameraMove(float y, float cameraSpeed = 1f)
-        {
-            // var finalY = transform.position.y + addY;
-            while (Math.Abs(transform.position.y - y) > 0.001)
-            {
-                var position = transform.position;
-                var movePosition = new Vector3(0, y, 0);
-            
-                transform.position = Vector3.Lerp(position, movePosition, Time.deltaTime * cameraSpeed);
-                yield return null;
-            }
-        
-            transform.position = new Vector3(0, y, 0);
-        }
-        public IEnumerator GameOverDetect(float targetY)
-        {
-            ValueManager.Instance.IsGameEnded = true;
-
-            // targetY가 화면에 보이는지 확인
-            var targetPos = camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
-            if (targetPos.y < 0) StartCoroutine(CameraMove(targetY, 5));
-            yield return new WaitForSeconds(0.5f);
-            SeManager.Instance.Play2Shot(4);
-            FadeManager.Instance.WhiteFXFadeOut(0.1f);
-            yield return new WaitForSeconds(0.2f);
-            gameOverText.SetActive(true);
-            yield return new WaitForSeconds(0.1f);
-            FadeManager.Instance.FadeIn(0.1f);
-            
-            yield return new WaitForSeconds(2.0f);
-            gameOverText.SetActive(false);
-            yield return new WaitForSeconds(0.5f);
-            
-            SeManager.Instance.Play2Shot(2);
-            retryPanel.SetActive(true);
-        }
         public IEnumerator RemoveQueueAndUpdate()
         {
+            // queueUpdateCount가 0일 때까지 대기
+            while (_queueUpdateCount != 0)
+            {
+                yield return null;
+            }
+            
             // ValueManager.Instance.IsGeneratingBlock 이 false가 될 때까지 대기
             while (ValueManager.Instance.IsGeneratingBlock)
             {
@@ -217,15 +305,82 @@ namespace Game
                 hiddenBlockObject.SetActive(false);
                 createQueueBlockCount = 6;
             }
-            
+
             // NowDropBlock에 있던 오브젝트 제거
             Destroy(blockQueueLocations[0].transform.GetChild(0).gameObject);
             
-            // TODO 6 -> 5, 5-> 4, 4 -> 3, 3 -> 2, 2 -> 1, 1 -> NowDropBlock 위치로 이동 (에니메이션)
+            /* 새로운 블록 생성 시작 */
+            var blockInfo = queuedBlocks[createQueueBlockCount - 1].Split("/");
+            var id = int.Parse(blockInfo[0]);
+            var size = int.Parse(blockInfo[1]);
+            var rotation = int.Parse(blockInfo[2]);
+            
+            var blockC = Instantiate(blockQueuePrefabs[id], blockQueueLocations[createQueueBlockCount - 1].transform);
+            
+            // GameObject에서 TextMeshProUGUI를 가져옴
+            var blockTMP = blockC.GetComponentInChildren<TextMeshProUGUI>();
+            var blockSize = blockTMP.text.Split("x");
+                    
+            // 큐에 있는 블록들의 크기 반영
+            var x = int.Parse(blockSize[0]);
+            var y = int.Parse(blockSize[1]);
+            blockTMP.text = $"{x*size}x{y*size}";
+                    
+            // 큐에 있는 블록들의 회전 반영
+            blockC.transform.rotation = Quaternion.Euler(0, 0, rotation * 90);
+            /* 새로운 블록 생성 끝 */
 
+            // blockQueueLocations[n]에 있던 오브젝트를 blockQueueLocations[n - 1]으로 이동 1 ~ 5
+            for (var i = 1; i < createQueueBlockCount; i++)
+            {
+                _queueUpdateCount++;
+                var block = blockQueueLocations[i].transform.GetChild(0).gameObject;
+                
+                // block의 부모를 blockQueueLocations[i - 1]으로 변경
+                block.transform.SetParent(blockQueueLocations[i - 1].transform);
+                
+                // 부모 오브젝트의 width와 height의 값으로 크기 조정
+                var queueBlockRectTransform = block.GetComponent<RectTransform>();
+                var blockQueueLocationRectTransform = blockQueueLocations[i - 1].GetComponent<RectTransform>();
+                
+                queueBlockRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, blockQueueLocationRectTransform.rect.width);
+                queueBlockRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, blockQueueLocationRectTransform.rect.height);
+
+                if (i == 1)
+                {
+                    block.transform.GetChild(0).localPosition = Vector3.zero;
+                    block.transform.GetChild(1).localPosition = Vector3.zero;
+                }
+                
+                // 큐에 있는 블록들의 위치 반영
+                StartCoroutine(MoveBlock(block));
+            }
             yield return null;
+            
         }
-        // ButtonCoroutines
+        private IEnumerator MoveBlock(GameObject block, float moveSpeed = 1f)
+        {
+            var elapsedLerpTime = 0f;
+
+            while (Math.Abs(block.transform.localPosition.x - Vector3.zero.x) > 0.01)
+            {
+                yield return null;
+                try
+                {
+                    elapsedLerpTime += Time.deltaTime * moveSpeed;
+                    if (elapsedLerpTime > 1f) elapsedLerpTime = 1f;
+                    block.transform.localPosition = Vector3.Lerp(block.transform.localPosition, Vector3.zero, elapsedLerpTime);
+                }
+                catch (MissingReferenceException)
+                {
+                    _queueUpdateCount--;
+                    StopCoroutine(MoveBlock(block, moveSpeed));
+                }
+            }
+            block.transform.localPosition = Vector3.zero;
+            _queueUpdateCount--;
+        }
+        // // ButtonCoroutines
         private static IEnumerator RetryConfirm()
         {
             SeManager.Instance.Play2Shot(7);
@@ -234,7 +389,7 @@ namespace Game
             ValueManager.Instance.ResetLocalData();
             SceneManager.LoadScene("EndlessMode");
         }
-        // MenuOptions
+        // // // MenuOptions
         private static IEnumerator MainMenu()
         {
             SeManager.Instance.Play2Shot(7);

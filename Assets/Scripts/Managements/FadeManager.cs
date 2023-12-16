@@ -26,6 +26,7 @@ namespace Managements
         [Description ("화면을 정해진 시간동안 흰색으로 전환됩나다.")]
         public void WhiteFXFadeOut(float time)
         {
+            whiteFX.gameObject.SetActive(true);
             StopAllCoroutines();
             StartCoroutine(WhiteFXFadeOutCoroutine(time));
         }
@@ -33,6 +34,7 @@ namespace Managements
         [Description ("화면을 정해진 시간동안 검은색으로 전환됩나다.")]
         public void BlackFXFadeOut(float time)
         {
+            blackFX.gameObject.SetActive(true);
             StopAllCoroutines();
             StartCoroutine(BlackFXFadeOutCoroutine(time));
         }
@@ -47,7 +49,6 @@ namespace Managements
         /* Coroutines */
         private IEnumerator WhiteFXFadeOutCoroutine(float time)
         {
-            whiteFX.gameObject.SetActive(true);
             if (Mathf.Approximately(time, 0f))
             {
                 whiteFX.color = _whiteColor;
@@ -59,12 +60,12 @@ namespace Managements
                     whiteFX.color = new Color(_whiteColor.r, _whiteColor.g, _whiteColor.b, whiteFX.color.a + Time.deltaTime / time);
                     yield return null;
                 }
+                whiteFX.color = _whiteColor;
             }
         }
 
         private IEnumerator BlackFXFadeOutCoroutine(float time)
         {
-            blackFX.gameObject.SetActive(true);
             if (Mathf.Approximately(time, 0f))
             {
                 blackFX.color = _blackColor;
@@ -76,6 +77,7 @@ namespace Managements
                     blackFX.color = new Color(_blackColor.r, _blackColor.g, _blackColor.b, blackFX.color.a + Time.deltaTime / time);
                     yield return null;
                 }
+                blackFX.color = _blackColor;
             }
         }
 
@@ -94,6 +96,9 @@ namespace Managements
                     whiteFX.color = new Color(_whiteColor.r, _whiteColor.g, _whiteColor.b, whiteFX.color.a - Time.deltaTime / time);
                     yield return null;
                 }
+                
+                blackFX.color = new Color(_blackColor.r, _blackColor.g, _blackColor.b, 0f);
+                whiteFX.color = new Color(_whiteColor.r, _whiteColor.g, _whiteColor.b, 0f);
                 blackFX.gameObject.SetActive(false);
                 whiteFX.gameObject.SetActive(false);
             }

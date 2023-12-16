@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using Managements;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -117,6 +119,33 @@ namespace SceneOnly
         {
             SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
+            
+            // 점수 반영
+            var ranks = new[] {
+                records.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>(),
+                records.transform.GetChild(3).GetChild(1).GetComponent<TextMeshProUGUI>(),
+                records.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>(),
+                records.transform.GetChild(5).GetChild(1).GetComponent<TextMeshProUGUI>(),
+                records.transform.GetChild(6).GetChild(1).GetComponent<TextMeshProUGUI>(),
+                records.transform.GetChild(7).GetChild(1).GetComponent<TextMeshProUGUI>()
+            };
+
+            for (var i = 0; i < 6; i++)
+            {
+                try
+                {
+                    ranks[i].text = $"{ValueManager.Instance.EndlessModeHighScore()[i].ToString()}m";
+                }
+                catch (NullReferenceException)
+                {
+                    ranks[i].text = "0m";
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    ranks[i].text = "0m";
+                }
+            }
+            
             yield return new WaitForSeconds(0.5f);
             SceneSetActivates(false, false, true, false, false);
             FadeManager.Instance.FadeIn(0.1f);

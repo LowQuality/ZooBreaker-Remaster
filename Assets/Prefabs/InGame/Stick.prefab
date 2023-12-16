@@ -176,3 +176,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBody2D: {fileID: 6046387425117498556}
+  spriteRenderer: {fileID: 7700540115457381755}
