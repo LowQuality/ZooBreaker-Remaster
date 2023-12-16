@@ -3205,10 +3205,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0a88bd7376a36a4687da72376c23194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxBlockSize: 3
   startText: {fileID: 2041641049}
   bestScoreText: {fileID: 488647057}
   nowScoreText: {fileID: 845374152}
+  blockIDPercentage:
+  - -1~-1
+  - -1~-1
+  - 0~100
+  - -1~-1
+  - -1~-1
+  blockSizePercentage:
+  - 0~34
+  - 35~67
+  - 68~100
+  blockRotationPercentage:
+  - 0~100
+  - -1~-1
+  - -1~-1
+  - -1~-1
 --- !u!114 &1047501949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3496,13 +3510,17 @@ MonoBehaviour:
   - {fileID: 1782376040}
   - {fileID: 1486100809}
   blockQueuePrefabs:
+  - {fileID: 8067877763585570355, guid: f469d98081c391b4885cf070d8e52518, type: 3}
   - {fileID: 8517756733051603442, guid: 3bdbd20ef88d9d54c86e08712a167673, type: 3}
   - {fileID: 1577895716311695915, guid: 5e79a1d1b46ed634a92fa8e8efd2b360, type: 3}
   - {fileID: 6853700224410381135, guid: 6f63ce35abd77b648a49b2f901d0c13e, type: 3}
+  - {fileID: 8067877763585570355, guid: f469d98081c391b4885cf070d8e52518, type: 3}
   blockPrefabs:
+  - {fileID: 6912567600979939566, guid: 8ff5d85534806f24786df4830fb89269, type: 3}
   - {fileID: 8673090593460704651, guid: 8c2443de3108c2c4c81dc867b9e20c29, type: 3}
   - {fileID: 8004092314770766373, guid: 51db4fa8277590642a3e253b81f4907f, type: 3}
   - {fileID: 5534396404295715931, guid: 59f3261601dbf0648b6d6e3632826a93, type: 3}
+  - {fileID: 6692664250732979487, guid: 822c8808e2337d34b99f4ed8874cbd72, type: 3}
   blockStore: {fileID: 645119467}
   eventSystem: {fileID: 1300508161}
   graphicRayCaster: {fileID: 1047501949}

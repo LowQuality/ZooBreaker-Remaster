@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Game;
 using Managements;
 using TMPro;
@@ -10,10 +11,12 @@ namespace SceneOnly
 {
     public class EndlessMode : MonoBehaviour
     {
-        [SerializeField] private int maxBlockSize;
         [SerializeField] private GameObject startText;
         [SerializeField] private TextMeshProUGUI bestScoreText;
         [SerializeField] private TextMeshProUGUI nowScoreText;
+        [SerializeField] private List<string> blockIDPercentage;
+        [SerializeField] private List<string> blockSizePercentage;
+        [SerializeField] private List<string> blockRotationPercentage;
         
         private Camera _camera;
         private int _nowHighestHeight;
@@ -68,9 +71,42 @@ namespace SceneOnly
                 if (ValueManager.Instance.QueuedBlocks().Count < 8)
                 {
                     ValueManager.Instance.IsGeneratingBlock = true;
-                    var id = random.Next(0, 3);
-                    var size = random.Next(1, maxBlockSize + 1);
-                    const int rotation = 0;
+                    
+                    // 블록의 ID를 랜덤으로 정함
+                    var percentage = random.Next(0, 101);
+                    var id = 0;
+                    for (var i = 0; i < blockIDPercentage.Count; i++)
+                    {
+                        var percentageMinMax = blockIDPercentage[i].Split('~');
+                        if (percentage < int.Parse(percentageMinMax[0]) ||
+                            percentage > int.Parse(percentageMinMax[1])) continue;
+                        id = i;
+                        break;
+                    }
+                    
+                    // 블록의 크기를 랜덤으로 정함
+                    percentage = random.Next(0, 101);
+                    var size = 0;
+                    for (var i = 0; i < blockSizePercentage.Count; i++)
+                    {
+                        var percentageMinMax = blockSizePercentage[i].Split('~');
+                        if (percentage <= int.Parse(percentageMinMax[0]) ||
+                            percentage >= int.Parse(percentageMinMax[1])) continue;
+                        size = i + 1;
+                        break;
+                    }
+                    
+                    // 블록의 회전을 랜덤으로 정함
+                    percentage = random.Next(0, 101);
+                    var rotation = 0;
+                    for (var i = 0; i < blockRotationPercentage.Count; i++)
+                    {
+                        var percentageMinMax = blockRotationPercentage[i].Split('~');
+                        if (percentage < int.Parse(percentageMinMax[0]) ||
+                            percentage > int.Parse(percentageMinMax[1])) continue;
+                        rotation = i;
+                        break;
+                    }
 
                     ValueManager.Instance.QueuedBlocks(id, size, rotation);
                 }
