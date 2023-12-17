@@ -6,9 +6,18 @@ namespace Managements
 {
     public class GuidManager : MonoBehaviour
     {
-        [SerializeField] [ReadOnly] internal string mGuid = System.Guid.NewGuid().ToString();
-        [HideInInspector] [SerializeField] internal string mLastGuid;
-        [SerializeField] internal bool dynamicGuid;
+#if (UNITY_EDITOR)
+        [ReadOnly]
+#endif
+        [SerializeField]
+        internal string mGuid = System.Guid.NewGuid().ToString();
+        
+        [HideInInspector]
+        [SerializeField]
+        internal string mLastGuid;
+        
+        [SerializeField]
+        internal bool dynamicGuid;
 
         internal bool GameStarted;
 
@@ -45,7 +54,8 @@ namespace Managements
             return guidManager != null ? guidManager.Guid : null;
         }
     }
-
+    
+#if (UNITY_EDITOR)
     [CustomEditor(typeof(GuidManager))]
     public class GuidButton : Editor
     {
@@ -78,7 +88,7 @@ namespace Managements
             }
         }
     } 
-
+    
     public class ReadOnlyAttribute : PropertyAttribute
     { }
 
@@ -92,4 +102,5 @@ namespace Managements
             GUI.enabled = true;
         }
     }
+#endif
 }

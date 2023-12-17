@@ -15,8 +15,7 @@ namespace Game
     public class Main : MonoBehaviour
     {
         public static Main Instance { get; private set; }
-        
-        [SerializeField] private new Camera camera;
+
         [SerializeField] private GameObject pausePanel;
         [SerializeField] private GameObject menuPanel;
         [SerializeField] private GameObject retryPanel;
@@ -29,6 +28,8 @@ namespace Game
         [SerializeField] private GameObject blockStore;
         [SerializeField] private EventSystem eventSystem;
         [SerializeField] private GraphicRaycaster graphicRayCaster;
+        
+        private Camera _camera;
 
         private int _queueUpdateCount;
         private bool _catchingBlock;
@@ -46,6 +47,7 @@ namespace Game
         /* Unity API */
         private void Start()
         {
+            _camera = Camera.main;
             StartCoroutine(InitQueue());
             StartCoroutine(DetectMouse());
         }
@@ -104,7 +106,7 @@ namespace Game
             var style = int.Parse(blockInfo[3]);
             
             // 현제 마우스 위치를 가져옴
-            var mousePosition = camera.ScreenToWorldPoint(Input.mousePosition);
+            var mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
             
             // 블록을 생성 / 사운드 재생
             SeManager.Instance.Play2Shot(9);
@@ -160,8 +162,8 @@ namespace Game
                 graphicRayCaster.Raycast(_pointerEventData, results);
 
                 var hit = results.Count(result => result.gameObject.CompareTag("Droppable"));
-                var position = new Vector3(camera.ScreenToWorldPoint(Input.mousePosition).x,
-                    camera.ScreenToWorldPoint(Input.mousePosition).y, -10);
+                var position = new Vector3(_camera.ScreenToWorldPoint(Input.mousePosition).x,
+                    _camera.ScreenToWorldPoint(Input.mousePosition).y, -10);
 
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -224,7 +226,7 @@ namespace Game
             if (_isCameraMoving)
             {
                 // 카메라 시작 위치를 현제 카메라 위치로 변경
-                _startCameraPos = camera.transform.position;
+                _startCameraPos = _camera.transform.position;
                 
                 // 카메라 이동 끝 위치를 y로 변경
                 _endCameraPos = new Vector3(0, y, 0);
@@ -237,7 +239,7 @@ namespace Game
             }
             _isCameraMoving = true;
             
-            _startCameraPos = camera.transform.position;
+            _startCameraPos = _camera.transform.position;
             _endCameraPos = new Vector3(0, y, 0);
 
             while (_timeToMoveCamera < 1)
@@ -265,7 +267,7 @@ namespace Game
             blockQueueLocations[0].SetActive(true);
 
             // targetY가 화면에 보이는지 확인
-            var targetPos = camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
+            var targetPos = _camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
             if (targetPos.y < 0) StartCoroutine(CameraMove(targetY, 8f));
             yield return new WaitForSeconds(0.5f);
             SeManager.Instance.Play2Shot(4);
