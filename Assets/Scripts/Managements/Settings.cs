@@ -148,7 +148,7 @@ namespace Managements
 #if (DEV)
         public string DebugInfo()
         {
-            if (!Debug.isDebugBuild) return null;
+            // if (!Debug.isDebugBuild) return null;
             // 클래스의 필드들 모두 가져오기
             var fields = typeof(Settings).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
             
