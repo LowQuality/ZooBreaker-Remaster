@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Managements;
 using UnityEngine;
@@ -12,7 +13,16 @@ namespace Game
             if (!Input.GetKeyDown(KeyCode.Escape) || exit.activeSelf) return;
             SeManager.Instance.Play2Shot(7);
             ValueManager.Instance.IsGamePaused = true;
-            Main.Instance.ResetImagineBlock();
+            
+            try
+            {
+                Main.Instance.ResetImagineBlock();
+            }
+            catch (NullReferenceException)
+            {
+                // ignored
+            }
+            
             BGMManager.Instance.Pause();
             exit.SetActive(true);
         }
