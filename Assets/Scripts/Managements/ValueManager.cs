@@ -92,7 +92,14 @@ namespace Managements
             }
             else
             {
-                return _GLO_endlessModeHighScore;
+                if (_GLO_endlessModeHighScore == null || _GLO_endlessModeHighScore.Count == 0)
+                {
+                    return new List<int> { 0, 0, 0, 0, 0, 0 };
+                }
+                else
+                {
+                    return _GLO_endlessModeHighScore;
+                }
             }
             return null;
         }
