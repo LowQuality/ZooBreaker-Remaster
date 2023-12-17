@@ -25,7 +25,7 @@ namespace Game
         [SerializeField] private TextMeshProUGUI hiddenBlockCount;
         [SerializeField] private GameObject[] blockQueueLocations;
         [SerializeField] private GameObject[] blockQueuePrefabs;
-        [SerializeField] private GameObject[] blockPrefabs;
+        [SerializeField] private List<GameObjectListWrapper> blockPrefabs;
         [SerializeField] private GameObject blockStore;
         [SerializeField] private EventSystem eventSystem;
         [SerializeField] private GraphicRaycaster graphicRayCaster;
@@ -109,8 +109,13 @@ namespace Game
             // 블록을 생성 / 사운드 재생
             SeManager.Instance.Play2Shot(9);
             ValueManager.Instance.CanDropBlock = false;
-            var block = Instantiate(blockPrefabs[id + style * 5], mousePosition, Quaternion.Euler(0, 0, rotation * 90), blockStore.transform);
-            block.transform.localScale = new Vector3(size * 2, size * 2, 1);
+            var block = Instantiate(blockPrefabs[style].gameObjects[id], mousePosition, Quaternion.Euler(0, 0, rotation * 90), blockStore.transform);
+            
+            var blockSize = block.transform.localScale;
+            blockSize.x *= size * 2;
+            blockSize.y *= size * 2;
+            block.transform.localScale = blockSize;
+            
             block.GetComponent<Rigidbody2D>().mass = size;
             
             StartCoroutine(RemoveQueueAndUpdate());
@@ -175,13 +180,22 @@ namespace Game
                     // imagineBlock이 null이면 imagineBlock을 생성
                     if (_imagineBlock == null)
                     {
-                        _imagineBlock = Instantiate(blockPrefabs[id + style * 5], position,
+                        _imagineBlock = Instantiate(blockPrefabs[style].gameObjects[id], position,
                             Quaternion.Euler(0, 0, rotation * 90));
+                        
                         _imagineBlock.transform.SetAsFirstSibling();
-                        _imagineBlock.transform.localScale = new Vector3(size * 2, size * 2, 1);
+                        
+                        var imagineBlockSize = _imagineBlock.transform.localScale;
+                        imagineBlockSize.x *= size * 2;
+                        imagineBlockSize.y *= size * 2;
+                        _imagineBlock.transform.localScale = imagineBlockSize;
+                        
                         _imagineBlock.GetComponent<Blocks>().enabled = false;
                         _imagineBlock.GetComponent<Collider2D>().enabled = false;
-                        _imagineBlock.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+                        
+                        var imagineBlockColor = _imagineBlock.GetComponent<SpriteRenderer>().color;
+                        imagineBlockColor.a = 0.5f;
+                        _imagineBlock.GetComponent<SpriteRenderer>().color = imagineBlockColor;
                     }
                 }
 
@@ -489,5 +503,19 @@ namespace Game
             yield return new WaitForSeconds(1f);
             SceneManager.LoadScene("MainMenu");
         }
+    }
+    
+    [Serializable]
+    public class GameObjectListWrapper
+    {
+        public string name;
+        public List<GameObject> gameObjects;
+    }
+    
+    [Serializable]
+    public class StringListWrapper
+    {
+        public string name;
+        public List<string> strings;
     }
 }

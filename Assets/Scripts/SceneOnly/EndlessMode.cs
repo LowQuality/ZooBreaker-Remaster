@@ -17,7 +17,7 @@ namespace SceneOnly
         [SerializeField] private List<string> blockIDPercentage;
         [SerializeField] private List<string> blockSizePercentage;
         [SerializeField] private List<string> blockRotationPercentage;
-        [SerializeField] private List<string> blockStylePercentage;
+        [SerializeField] private List<StringListWrapper> blockStylePercentage;
         
         private Camera _camera;
         private int _nowHighestHeight;
@@ -87,7 +87,6 @@ namespace SceneOnly
                     
                     // 블록의 크기를 랜덤으로 정함
                     percentage = random.Next(0, 101);
-                    Debug.Log(percentage);
                     var size = 0;
                     for (var i = 0; i < blockSizePercentage.Count; i++)
                     {
@@ -113,9 +112,9 @@ namespace SceneOnly
                     // 블록의 스타일을 랜덤으로 정함
                     percentage = random.Next(0, 101);
                     var style = 0;
-                    for (var i = 0; i < blockStylePercentage.Count; i++)
+                    for (var i = 0; i < blockStylePercentage[id].strings.Count; i++)
                     {
-                        var percentageMinMax = blockStylePercentage[i].Split('~');
+                        var percentageMinMax = blockStylePercentage[id].strings[i].Split('~');
                         if (percentage < int.Parse(percentageMinMax[0]) ||
                             percentage > int.Parse(percentageMinMax[1])) continue;
                         style = i;
