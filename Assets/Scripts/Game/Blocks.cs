@@ -71,7 +71,7 @@ namespace Game
             while (true)
             {
                 yield return null;
-                // 블록이 y:-15 이하로 떨어지면 게임오버
+                // 블록이 y:-5 이하로 떨어지면 게임오버
                 if (transform.position.y < -5f && !ValueManager.Instance.IsGameEnded)
                 {
                     Main.Instance.StartCoroutine(Main.Instance.GameOverDetect(transform.position.y));

@@ -221,10 +221,12 @@ namespace Game
         }
         public IEnumerator CameraMove(float y, float cameraSpeed = 1f, float duration = 1f)
         {
-            if (_endCameraPos.y >= y) yield break;
             // 이미 카메라가 움직이고 있을 때 작동
             if (_isCameraMoving)
             {
+                // 이미 카메라가 y보다 높은 위치에 있을 때 작동
+                if (_endCameraPos.y >= y) yield break;
+                
                 // 카메라 시작 위치를 현제 카메라 위치로 변경
                 _startCameraPos = _camera.transform.position;
                 
@@ -267,8 +269,8 @@ namespace Game
             blockQueueLocations[0].SetActive(true);
 
             // targetY가 화면에 보이는지 확인
-            var targetPos = _camera.WorldToViewportPoint(new Vector3(0, targetY, 0));
-            if (targetPos.y < 0) StartCoroutine(CameraMove(targetY, 8f));
+            var minY = _camera.ViewportToWorldPoint(new Vector3(0, 0, _camera.nearClipPlane)).y;
+            if (targetY < minY && targetY >= 0f) StartCoroutine(CameraMove(targetY, 8f));
             yield return new WaitForSeconds(0.5f);
             SeManager.Instance.Play2Shot(4);
             FadeManager.Instance.WhiteFXFadeOut(0.1f);
