@@ -72,7 +72,7 @@ namespace Managements
             }
         }
         
-        [Description("엔드리스 모드의 점수를 추가하거나 최고 6개의 점수를 가져옵니다.")]
+        [Description("엔드리스 모드의 점수를 추가하거나 가장 높은 점수 최대 6개의 점수를 가져옵니다.")]
         public List<int> EndlessModeHighScore(int score = -1)
         {
             if (score != -1)

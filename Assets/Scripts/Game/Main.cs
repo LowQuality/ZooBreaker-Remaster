@@ -201,9 +201,8 @@ namespace Game
                     }
                 }
 
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButton(0) && _imagineBlock != null)
                 {
-                    if (_imagineBlock == null) continue;
                     _imagineBlock.transform.position = position;
                 }
 

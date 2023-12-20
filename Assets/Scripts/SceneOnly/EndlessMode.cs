@@ -145,7 +145,8 @@ namespace SceneOnly
         {
             while (true)
             {
-                yield return new WaitForSeconds(0.25f);
+                // yield return new WaitForSeconds(0.25f);
+                yield return null;
                 _nowHighestHeight = Mathf.FloorToInt(Main.Instance.GetHighestBlockHeight());
                 ValueManager.Instance.BlockBestHeight = _nowHighestHeight;
             
