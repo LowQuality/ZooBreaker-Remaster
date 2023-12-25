@@ -98,14 +98,14 @@ namespace Game
             // 게임이 끝나거나 일시정지 상태일 때 블록이 떨어지지 않도록 함
             if (ValueManager.Instance.IsGameEnded || !ValueManager.Instance.IsPlaying || ValueManager.Instance.IsGamePaused || !ValueManager.Instance.CanDropBlock) return;
             
-            // 현제 떨어뜨릴 블록의 정보를 가져옴
+            // 현재 떨어뜨릴 블록의 정보를 가져옴
             var blockInfo = ValueManager.Instance.QueuedBlocks()[0].Split("/");
             var id = int.Parse(blockInfo[0]);
             var size = int.Parse(blockInfo[1]);
             var rotation = int.Parse(blockInfo[2]);
             var style = int.Parse(blockInfo[3]);
             
-            // 현제 마우스 위치를 가져옴
+            // 현재 마우스 위치를 가져옴
             var mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
             
             // 블록을 생성 / 사운드 재생
@@ -172,7 +172,7 @@ namespace Game
                     
                     blockQueueLocations[0].SetActive(false);
                     
-                    // 현제 떨어뜨릴 블록의 정보를 가져옴
+                    // 현재 떨어뜨릴 블록의 정보를 가져옴
                     var blockInfo = ValueManager.Instance.QueuedBlocks()[0].Split("/");
                     var id = int.Parse(blockInfo[0]);
                     var size = int.Parse(blockInfo[1]);
@@ -226,7 +226,7 @@ namespace Game
                 // 이미 카메라가 y보다 높은 위치에 있을 때 작동
                 if (_endCameraPos.y >= y) yield break;
                 
-                // 카메라 시작 위치를 현제 카메라 위치로 변경
+                // 카메라 시작 위치를 현재 카메라 위치로 변경
                 _startCameraPos = _camera.transform.position;
                 
                 // 카메라 이동 끝 위치를 y로 변경
