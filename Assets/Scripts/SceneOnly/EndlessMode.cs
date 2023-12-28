@@ -31,7 +31,7 @@ namespace SceneOnly
             StartCoroutine(GameStart());
             StartCoroutine(SendAndUpdateScore());
             StartCoroutine(DynamicCamera());
-            StartCoroutine(Backgrounds());
+            if (Settings.Instance.IsBackgroundsActive) StartCoroutine(Backgrounds());
             
             // Rank Test Sample
             // ValueManager.Instance.EndlessModeHighScore(49849894);
@@ -164,6 +164,9 @@ namespace SceneOnly
         private IEnumerator Backgrounds()
         {
             var t = 0f;
+            var first = false;
+            var second = false;
+            
             while (true)
             {
                 yield return null;
@@ -172,17 +175,26 @@ namespace SceneOnly
                 backgrounds.SetActive(Settings.Instance.IsBackgroundsActive);
                 backgrounds.transform.position = new Vector3(0, _camera.transform.position.y - 8, 0);
                 
-                // 블록의 높이가 50m 이상이면 첫번째 배경이 서서히 사라짐
-                if (ValueManager.Instance.BlockBestHeight >= 50f && t < 1f)
+                // 블록의 높이가 25m 이상이면 첫 번째 배경이 서서히 사라짐
+                if (ValueManager.Instance.BlockBestHeight >= 25f && first == false)
                 {
                     t += Time.deltaTime * 2f;
                     var a = Mathf.Lerp(1f, 0f, t);
                     backgrounds.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, a);
+                    if (!(t >= 1f)) continue;
+                    t = 0f;
+                    first = true;
                 }
-                // else
-                // {
-                //     backgrounds.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-                // }
+                // 블록의 높이가 50m 이상이면 두 번째 배경이 서서히 사라짐
+                else if (ValueManager.Instance.BlockBestHeight >= 50f && second == false)
+                {
+                    t += Time.deltaTime * 2f;
+                    var a = Mathf.Lerp(1f, 0f, t);
+                    backgrounds.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, a);
+                    if (!(t >= 1f)) continue;
+                    t = 0f;
+                    second = true;
+                }
             }
         }
     }
