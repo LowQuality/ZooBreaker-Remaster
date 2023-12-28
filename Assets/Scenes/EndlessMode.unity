@@ -866,7 +866,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &119645056
 Transform:
   m_ObjectHideFlags: 0
@@ -3486,9 +3486,9 @@ MonoBehaviour:
   nowScoreText: {fileID: 845374152}
   blockIDPercentage:
   - -1~-1
-  - -1~-1
-  - 0~100
-  - -1~-1
+  - 0~10
+  - 11~95
+  - 96~100
   - -1~-1
   blockSizePercentage:
   - 0~40
@@ -3504,7 +3504,8 @@ MonoBehaviour:
   - name: Circle
     strings: []
   - name: Rectangle
-    strings: []
+    strings:
+    - 0~100
   - name: Sqare
     strings:
     - 0~20
@@ -3513,7 +3514,8 @@ MonoBehaviour:
     - 61~80
     - 81~100
   - name: Stick
-    strings: []
+    strings:
+    - 0~100
   - name: Triangle
     strings: []
   backgrounds: {fileID: 119645055}
@@ -3811,37 +3813,37 @@ MonoBehaviour:
   blockPrefabs:
   - name: StyleID 0
     gameObjects:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 2191380635950796240, guid: 18e16e91cc1017c47948af0fba10a31e, type: 3}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 6912567600979939566, guid: 8ff5d85534806f24786df4830fb89269, type: 3}
+    - {fileID: 8673090593460704651, guid: 8c2443de3108c2c4c81dc867b9e20c29, type: 3}
+    - {fileID: 2191380635950796240, guid: cda6e589fd26f9440bb13a9c7e5f6dff, type: 3}
+    - {fileID: 5534396404295715931, guid: 59f3261601dbf0648b6d6e3632826a93, type: 3}
+    - {fileID: 6692664250732979487, guid: 822c8808e2337d34b99f4ed8874cbd72, type: 3}
   - name: StyleID 1
     gameObjects:
     - {fileID: 0}
     - {fileID: 0}
-    - {fileID: 2191380635950796240, guid: 680ac1051b46c4a4a85b459d3e7203ec, type: 3}
+    - {fileID: 2191380635950796240, guid: dd0219d29a1b6634fba8477be98de452, type: 3}
     - {fileID: 0}
     - {fileID: 0}
   - name: StyleID 2
     gameObjects:
     - {fileID: 0}
     - {fileID: 0}
-    - {fileID: 2191380635950796240, guid: f6f106d2e4572164abc2b371b767fcb7, type: 3}
+    - {fileID: 2191380635950796240, guid: a5cac5dabc184c349a784faacafa56d1, type: 3}
     - {fileID: 0}
     - {fileID: 0}
   - name: StyleID 3
     gameObjects:
     - {fileID: 0}
     - {fileID: 0}
-    - {fileID: 2191380635950796240, guid: 8b1b6dfcda76c3e45a123c7cd96be5a2, type: 3}
+    - {fileID: 2191380635950796240, guid: a677bc14419d2d5448617572c138d412, type: 3}
     - {fileID: 0}
     - {fileID: 0}
   - name: StyleID 4
     gameObjects:
     - {fileID: 0}
     - {fileID: 0}
-    - {fileID: 2191380635950796240, guid: c605a8a816b370041a2a44b39be81be2, type: 3}
+    - {fileID: 2191380635950796240, guid: edfa1e377d898904294d78ec89ed976f, type: 3}
     - {fileID: 0}
     - {fileID: 0}
   blockStore: {fileID: 645119467}
