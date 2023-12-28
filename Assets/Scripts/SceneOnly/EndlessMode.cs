@@ -31,7 +31,7 @@ namespace SceneOnly
             StartCoroutine(GameStart());
             StartCoroutine(SendAndUpdateScore());
             StartCoroutine(DynamicCamera());
-            if (Settings.Instance.IsBackgroundsActive) StartCoroutine(Backgrounds());
+            StartCoroutine(Backgrounds());
             
             // Rank Test Sample
             // ValueManager.Instance.EndlessModeHighScore(49849894);
@@ -173,14 +173,18 @@ namespace SceneOnly
                 
                 // Backgrounds
                 backgrounds.SetActive(Settings.Instance.IsBackgroundsActive);
+
+                // 배경이 활성화 되어있으면 실행
+                if (!Settings.Instance.IsBackgroundsActive) continue;
                 backgrounds.transform.position = new Vector3(0, _camera.transform.position.y - 8, 0);
-                
+
                 // 블록의 높이가 25m 이상이면 첫 번째 배경이 서서히 사라짐
                 if (ValueManager.Instance.BlockBestHeight >= 25f && first == false)
                 {
                     t += Time.deltaTime * 2f;
                     var a = Mathf.Lerp(1f, 0f, t);
-                    backgrounds.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, a);
+                    backgrounds.transform.GetChild(0).GetComponent<SpriteRenderer>().color =
+                        new Color(1f, 1f, 1f, a);
                     if (!(t >= 1f)) continue;
                     t = 0f;
                     first = true;
@@ -190,7 +194,8 @@ namespace SceneOnly
                 {
                     t += Time.deltaTime * 2f;
                     var a = Mathf.Lerp(1f, 0f, t);
-                    backgrounds.transform.GetChild(1).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, a);
+                    backgrounds.transform.GetChild(1).GetComponent<SpriteRenderer>().color =
+                        new Color(1f, 1f, 1f, a);
                     if (!(t >= 1f)) continue;
                     t = 0f;
                     second = true;
