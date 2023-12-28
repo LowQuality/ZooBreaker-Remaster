@@ -166,16 +166,30 @@ namespace SceneOnly
             var t = 0f;
             var first = false;
             var second = false;
-            
+
             while (true)
             {
                 yield return null;
-                
+
                 // Backgrounds
                 backgrounds.SetActive(Settings.Instance.IsBackgroundsActive);
 
                 // 배경이 활성화 되어있으면 실행
                 if (!Settings.Instance.IsBackgroundsActive) continue;
+                
+                // 배경화면 x폭이 카메라보다 크거나 작으면 배경화면 x폭을 변경
+                
+                // 카메라가 보여주는 x좌표의 최솟값
+                var minX = _camera.ViewportToWorldPoint(new Vector3(0, 0, _camera.nearClipPlane)).x;
+
+                backgrounds.transform.localScale = minX switch
+                {
+                    < -7f => new Vector3(1.3f, 1f, 1f),
+                    > -5f and < -4f => new Vector3(0.8f, 1f, 1f),
+                    > -4f => new Vector3(0.7f, 1f, 1f),
+                    _ => new Vector3(1f, 1f, 1f)
+                };
+                
                 backgrounds.transform.position = new Vector3(0, _camera.transform.position.y - 8, 0);
 
                 // 블록의 높이가 25m 이상이면 첫 번째 배경이 서서히 사라짐

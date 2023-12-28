@@ -3508,11 +3508,13 @@ MonoBehaviour:
     - 0~100
   - name: Sqare
     strings:
-    - 0~20
-    - 21~40
-    - 41~60
-    - 61~80
-    - 81~100
+    - 0~15
+    - 16~29
+    - 30~44
+    - 45~59
+    - 60~74
+    - 75~89
+    - 90~100
   - name: Stick
     strings:
     - 0~100
@@ -3844,6 +3846,20 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 2191380635950796240, guid: edfa1e377d898904294d78ec89ed976f, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+  - name: StyleID 5
+    gameObjects:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 2191380635950796240, guid: 068c639d029619f45aef592ee93573be, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+  - name: StyleID 6
+    gameObjects:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 2191380635950796240, guid: d6399a3ba71013e4a9b9c7f5505e05f5, type: 3}
     - {fileID: 0}
     - {fileID: 0}
   blockStore: {fileID: 645119467}
