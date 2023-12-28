@@ -18,6 +18,8 @@ namespace SceneOnly
         [SerializeField] private List<string> blockSizePercentage;
         [SerializeField] private List<string> blockRotationPercentage;
         [SerializeField] private List<StringListWrapper> blockStylePercentage;
+
+        [SerializeField] private GameObject backgrounds;
         
         private Camera _camera;
         private int _nowHighestHeight;
@@ -29,6 +31,7 @@ namespace SceneOnly
             StartCoroutine(GameStart());
             StartCoroutine(SendAndUpdateScore());
             StartCoroutine(DynamicCamera());
+            StartCoroutine(Backgrounds());
             
             // Rank Test Sample
             // ValueManager.Instance.EndlessModeHighScore(49849894);
@@ -156,6 +159,30 @@ namespace SceneOnly
                     // 카메라 높이 변경
                     Main.Instance.StartCoroutine(Main.Instance.CameraMove(ValueManager.Instance.BlockBestHeight + 0.5f));
                 }
+            }
+        }
+        private IEnumerator Backgrounds()
+        {
+            var t = 0f;
+            while (true)
+            {
+                yield return null;
+                
+                // Backgrounds
+                backgrounds.SetActive(Settings.Instance.IsBackgroundsActive);
+                backgrounds.transform.position = new Vector3(0, _camera.transform.position.y - 8, 0);
+                
+                // 블록의 높이가 50m 이상이면 첫번째 배경이 서서히 사라짐
+                if (ValueManager.Instance.BlockBestHeight >= 50f && t < 1f)
+                {
+                    t += Time.deltaTime * 2f;
+                    var a = Mathf.Lerp(1f, 0f, t);
+                    backgrounds.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, a);
+                }
+                // else
+                // {
+                //     backgrounds.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+                // }
             }
         }
     }

@@ -31,8 +31,13 @@ namespace SceneOnly
         
         [SerializeField] private Slider bgmSlider;
         [SerializeField] private Slider seSlider;
+        [SerializeField] private Toggle backgroundToggle;
         
         /* Functions */
+        public void BackgroundToggle()
+        {
+            Settings.Instance.IsBackgroundsActive = backgroundToggle.isOn;
+        }
         private void SceneSetActivates(bool bTitle, bool bMenu, bool bRecords, bool bSettings, bool bHelp)
         {
             title.SetActive(bTitle);
@@ -155,6 +160,7 @@ namespace SceneOnly
             SeManager.Instance.Play2Shot(7);
             FadeManager.Instance.BlackFXFadeOut(0.1f);
             yield return new WaitForSeconds(0.5f);
+            backgroundToggle.isOn = Settings.Instance.IsBackgroundsActive;
             SceneSetActivates(false, false, false, true, false);
             FadeManager.Instance.FadeIn(0.1f);
         }

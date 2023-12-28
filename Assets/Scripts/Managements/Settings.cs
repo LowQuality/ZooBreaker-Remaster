@@ -29,6 +29,7 @@ namespace Managements
         /* Private Variables */
         private int _bgmVolume;
         private int _seVolume;
+        private bool _isBackgroundsActive;
         
         /* Public Variables */
         [Description("BGM의 볼륨을 나타냅니다.")]
@@ -43,6 +44,17 @@ namespace Managements
         {
             get => _seVolume;
             set => _seVolume = value;
+        }
+        
+        [Description("배경화면을 나타냅니다.")]
+        public bool IsBackgroundsActive
+        {
+            get => _isBackgroundsActive;
+            set
+            {
+                _isBackgroundsActive = value;
+                Save();
+            }
         }
         
         /* !! Dont Touch !! */
@@ -137,6 +149,7 @@ namespace Managements
                     Debug.LogWarning("설정 파일이 없습니다. 기본값으로 초기화합니다.");
                     _bgmVolume = 100;
                     _seVolume = 100;
+                    _isBackgroundsActive = true;
                     Save();
                 }
                 else
